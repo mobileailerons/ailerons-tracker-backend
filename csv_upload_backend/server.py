@@ -12,21 +12,41 @@ supabase_url = os.getenv("SUPABASE_URL")
 supabase_key = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(supabase_url, supabase_key)
 
+def get_individual_id_list():
+    data, count = supabase.table('individual_record_id').select("*").execute()
+
+    individual_id_list = []
+    for individual in data[1]:
+        individual_id_list.append({'individual_id': individual['individual_id']})
+
+    return individual_id_list
+
+
 def parse_csv(path, csv_id):
     absolute_path = os.path.abspath(path)
     df = pd.read_csv(absolute_path, index_col=None, encoding='ISO-8859-1', engine='python', on_bad_lines='error', sep=';')
 
     df_list = []
+    individual_id_list = get_individual_id_list()
+    new_individual_id_list = []
     for row in df.itertuples(index=False):
+
+        if not any(entry['individual_id'] == row.individual_id for entry in individual_id_list):
+            individual_id_list.append({ 'individual_id': row.individual_id })
+            new_individual_id_list.append({ 'individual_id': row.individual_id })
+
         new_record = Record(row._asdict())
         new_record.csv_id = csv_id
         df_list.append(new_record.__dict__)
 
-    return df_list
+    print(individual_id_list)
+    return df_list, new_individual_id_list
 
 def create_csv_log(file_name):
+
     csv_log = {'file_name': file_name }
     data, count = supabase.table('csv').insert(csv_log).execute()
+
     return data[1][0]['id']
 
 app = Flask(__name__)
@@ -45,7 +65,11 @@ def upload_file():
 
             csv_id = create_csv_log(file_name)
 
-            data, count = supabase.table('record').insert(parse_csv(file_path, csv_id)).execute()
+            df_list, new_individual_id_list = parse_csv(file_path, csv_id)
+
+            data, count = supabase.table('record').insert(df_list).execute()
+            print(data, count)
+            data, count = supabase.table('individual_record_id').insert(new_individual_id_list).execute()
             print(data, count)
 
             return "Fichiers envoyés avec succès"
