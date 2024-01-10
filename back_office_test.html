@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV File Upload</title>
+</head>
+<body>
+    <h2>CSV File Upload</h2>
+    
+    <form action="http://127.0.0.1:5000/upload" method="post" enctype="multipart/form-data">
+        <label for="csvFile">Choose a CSV file:</label>
+        <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+        <input type="hidden" id="originalFileName" name="originalFileName">
+        <br>
+        <button type="submit">Upload</button>
+    </form>
+
+    <script>
+        document.getElementById('csvFile').addEventListener('change', function(event) {
+            console.log(event.target.files[0].name);
+            document.getElementById('originalFileName').value = event.target.files[0].name;
+        });
+    </script>
+</body>
+</html>
