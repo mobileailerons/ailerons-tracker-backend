@@ -72,6 +72,8 @@ def upload_file():
             data, count = supabase.table('individual_record_id').insert(new_individual_id_list).execute()
             print(data, count)
 
+            os.remove(file_path)
+            
             return "Fichiers envoyés avec succès"
 
         except Exception as e:
