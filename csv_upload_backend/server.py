@@ -54,7 +54,6 @@ def create_csv_log(file_name):
 
     return data[1][0]['id']
 
-
 app = Flask(__name__)
 
 @app.route('/upload', methods=['GET', 'POST'])

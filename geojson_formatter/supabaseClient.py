@@ -2,7 +2,6 @@ import os
 from types import SimpleNamespace
 from dotenv import load_dotenv
 from supabase import create_client, Client
-import json
 
 load_dotenv()
 
@@ -19,3 +18,6 @@ class SupabaseClient:
         res = self._client.table("record").select("*").eq("individual_id", individual_id).execute()
         return res.data
 
+    def postPoints(self, pointData):
+        data = self._client.table('point_geojson').upsert({"csv_id": pointData.csv_id, "record_id": pointData.record_id, "individual_id": pointData.individual_id, "geojson": pointData.geoJSON}).execute()
+        print(data)

@@ -45,6 +45,10 @@ class GeneratorBase:
                 f.write(geojson.dumps(line.geoJSON))
                 f.close()
 
+    def upload_files(self):
+        for point in self._points:
+            self._client.postPoints(point)
+
 class Generator(GeneratorBase, metaclass=Singleton):
     pass
 
