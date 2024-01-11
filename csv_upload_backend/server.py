@@ -11,10 +11,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 load_dotenv()
 
-# supabase_url = os.getenv("SUPABASE_URL")
-# supabase_key = os.getenv("SUPABASE_KEY")
-supabase_url='https://rddizwstjdinzyzvnuun.supabase.co'
-supabase_key='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkZGl6d3N0amRpbnp5enZudXVuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwNDg5NTcwMywiZXhwIjoyMDIwNDcxNzAzfQ.cc143ySM1DZgtb1ADUP7p_HRdIpbaLp3X4ICf94rZD4'
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_KEY")
 
 supabase: Client = create_client(supabase_url, supabase_key)
 
@@ -68,10 +66,9 @@ def upload_file():
                 return "No selected file"
 
             file_name = secure_filename(file.filename)
-            file_path = os.path.join('/usr/src/app/uploaded_csv', file_name)
-            print("hey")
+            # file_path = os.path.join('/usr/src/app/uploaded_csv', file_name)
+            file_path = os.path.join('./uploaded_csv', file_name)
             file.save(file_path)
-            print("oi")
 
             csv_id = create_csv_log(file_name)
 
