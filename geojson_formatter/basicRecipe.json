@@ -1,0 +1,10 @@
+{
+    "version": 1,
+    "layers": {
+      "a_point": {
+        "source": "mapbox://tileset-source/louiscoutel/test-point-0",
+        "minzoom": 0,
+        "maxzoom": 5
+      }
+    }
+  }

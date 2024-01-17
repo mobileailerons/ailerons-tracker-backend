@@ -33,14 +33,14 @@ class GeneratorBase:
     def write_files(self, filePrefix):
         for point in self._points:
             counter = 1
-            filename = "./" + filePrefix + "_" + "point" + "_" + str(counter) + "_" + str(point.individual_id) + ".geojson"
+            filename = filePrefix + "_" + "point" + "_" + str(counter) + "_" + str(point.individual_id) + ".json"
             with open(filename, 'w') as f:
                 f.write(geojson.dumps(point.geoJSON))
                 f.close()
 
         for line in self._lines:
             counter = 1
-            filename2 = "./" +filePrefix + "_" +"line" + "_" + str(counter) + "_" + str(line.individual_id) + ".geojson"
+            filename2 = filePrefix + "_" +"line" + "_" + str(counter) + "_" + str(line.individual_id) + ".json"
             with open(filename2, 'w') as f:
                 f.write(geojson.dumps(line.geoJSON))
                 f.close()
