@@ -9,6 +9,9 @@ from werkzeug.utils import secure_filename
 from .geojson_formatter.generator.Generator import generator
 print(generator)
 
+from python_mts.scripts.mts_handler import Mts_Handler
+handler = Mts_Handler()
+print(handler.list_sources())
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
