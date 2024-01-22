@@ -1,8 +1,8 @@
 
 import geojson
-from geojsonDataItems import PointDataItem, LineDataItem
-from supabaseClient import SupabaseClient
-from singletonClass import Singleton
+from .supabase_client.supabaseClient import SupabaseClient
+from .utils.singletonClass import Singleton
+from .data_classes.geojsonDataItems import PointDataItem, LineDataItem
 
 class GeneratorBase:
     def __init__(self):
@@ -11,7 +11,6 @@ class GeneratorBase:
         self._individuals = self._client.get_individuals()
         self._points = []
         self._lines = []
-        self._handler = Mts_Handler()
 
         # récupère les relevés pour chaque individu
         for ind in self._individuals:

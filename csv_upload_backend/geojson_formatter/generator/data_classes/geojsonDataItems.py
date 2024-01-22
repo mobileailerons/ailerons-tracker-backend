@@ -1,5 +1,6 @@
-from properties import PointProperties, LineProperties
+from .properties import PointProperties, LineProperties
 from geojson import Feature, Point, LineString
+
 class PointDataItem:
     def __init__(self, record, individual):
         self.record_id = record["id"]

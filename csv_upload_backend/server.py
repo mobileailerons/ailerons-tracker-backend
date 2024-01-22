@@ -1,13 +1,12 @@
-from flask import Flask, request
+from flask import Flask, logging, request
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import sys
 import os
 import pandas as pd
-from record_model import Record
+from .record_model import Record
 from werkzeug.utils import secure_filename
-from geojson_formatter.formatter.geojsonGenerator import generator
-
+from .geojson_formatter.generator.Generator import generator
 print(generator)
 
 
