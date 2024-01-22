@@ -1,15 +1,15 @@
-from flask import Flask, logging, request
-from supabase import create_client, Client
-from dotenv import load_dotenv
+from python_mts.scripts.mts_handler import Mts_Handler
 import sys
 import os
+from flask import Flask, request
+from supabase import create_client, Client
+from dotenv import load_dotenv
 import pandas as pd
-from .record_model import Record
 from werkzeug.utils import secure_filename
+from .record_model import Record
 from .geojson_formatter.generator.Generator import generator
 print(generator)
 
-from python_mts.scripts.mts_handler import Mts_Handler
 handler = Mts_Handler()
 print(handler.list_sources())
 
@@ -35,7 +35,13 @@ def get_individual_id_list():
 
 def parse_csv(path, csv_id):
     absolute_path = os.path.abspath(path)
-    df = pd.read_csv(absolute_path, index_col=None, encoding='ISO-8859-1', engine='python', on_bad_lines='error', sep=';')
+    df = pd.read_csv(
+        absolute_path,
+        index_col=None,
+        encoding='ISO-8859-1',
+        engine='python',
+        on_bad_lines='error',
+        sep=';')
 
     df_list = []
     individual_id_list = get_individual_id_list()

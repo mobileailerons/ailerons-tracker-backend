@@ -5,12 +5,12 @@ class Properties:
         self.ind_name = individual["individual_name"]
         self.icon = individual["icon"]
 
-class PointProperties:
+class PointProperties(Properties):
     def __init__(self, record, individual):
         Properties.__init__(self, individual)
         self.timestamp = record["record_timestamp"]
 
-class LineProperties:
+class LineProperties(Properties):
     def __init__(self, records, individual):
         Properties.__init__(self, individual)
         self.timestamp = list(map(lambda record : record["record_timestamp"], records))

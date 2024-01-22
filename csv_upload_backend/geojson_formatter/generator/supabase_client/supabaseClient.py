@@ -1,5 +1,4 @@
 import os
-from types import SimpleNamespace
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
