@@ -1,4 +1,4 @@
-from python_mts.scripts.mts_handler import Mts_Handler
+from python_mts.scripts.mts_handler import MtsHandler
 import sys
 import os
 from flask import Flask, request
@@ -8,10 +8,7 @@ import pandas as pd
 from werkzeug.utils import secure_filename
 from .record_model import Record
 from .geojson_formatter.generator.Generator import generator
-print(generator)
 
-handler = Mts_Handler()
-print(handler.list_sources())
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
