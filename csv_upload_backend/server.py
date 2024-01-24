@@ -143,9 +143,9 @@ def upload_article():
             except Exception as e:
                 raise e
 
-            new_article = Article(request.form, image_url)
 
             try:
+                new_article = Article(request.form, image_url)
                 data = supabase.table('article').upsert(new_article.__dict__).execute()
                 content = data.__dict__
                 return content, 201
