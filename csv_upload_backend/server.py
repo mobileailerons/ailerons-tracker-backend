@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 from .record_model import Record
 from .article_model import Article
 from .cloudinary_client import upload_image
-from .errors import InvalidFileName, SupabaseError
+from .errors import InvalidFileName
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -85,7 +85,7 @@ def upload_file():
     if request.method == 'POST':
         try:
             file = request.files['csvFile']
-            
+
             if file.filename == '':
                 raise InvalidFileName()
 
@@ -96,19 +96,15 @@ def upload_file():
             csv_id = create_csv_log(file_name)
             df_list, new_individual_id_list = parse_csv(file_path, csv_id)
 
-            try:
-                supabase.table('record').insert(df_list).execute()
-                supabase.table('individual_record_id').insert(new_individual_id_list).execute()
-
-            except Exception as e:
-                raise e
+            supabase.table('record').insert(df_list).execute()
+            supabase.table('individual_record_id').insert(new_individual_id_list).execute()
 
             os.remove(file_path)
             content = "Successfully uploaded CSV"
             return content, 204
 
         except Exception as e:
-            return e.__dict__, 400
+            return e.__dict__["message"], 400
 
 
 @app.route('/news', methods=['GET','POST'])
@@ -124,36 +120,26 @@ def upload_article():
     """
     if request.method == 'POST':
         try:
-            try:
-                image = request.files['newsImage']
+            image = request.files['newsImage']
 
-                if image.filename == '':
-                    raise InvalidFileName
+            if image.filename == '':
+                raise InvalidFileName()
 
-                image_name = secure_filename(image.filename)
-                image_path = os.path.join('./uploaded_img', image_name)
-                image.save(image_path)
+            image_name = secure_filename(image.filename)
+            image_path = os.path.join('./uploaded_img', image_name)
+            image.save(image_path)
 
-                if os.path.exists(image_path):
-                    image_url = upload_image(image_name, image_path)
+            if os.path.exists(image_path):
+                image_url = upload_image(image_name, image_path)
 
-                if image_url:
-                    os.remove(image_path)
-
-            except Exception as e:
-                raise e
-
-
-            try:
-                new_article = Article(request.form, image_url)
-                data = supabase.table('article').upsert(new_article.__dict__).execute()
-                content = data.__dict__
-                return content, 201
-
-            except Exception as e:
-                raise SupabaseError(e.__dict__["message"]) from e
+            if image_url:
+                os.remove(image_path)
+                
+            new_article = Article(request.form, image_url)
+            data = supabase.table('article').upsert(new_article.__dict__).execute()
+            return data.__dict__, 201
 
         except Exception as e:
             return e.__dict__["message"], 400
-        
+
         
