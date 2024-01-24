@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 from .record_model import Record
 from .article_model import Article
 from .cloudinary_client import upload_image
+from .errors import InvalidFileName, SupabaseError
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -16,7 +17,6 @@ load_dotenv()
 
 supabase_url = os.getenv("SUPABASE_URL")
 supabase_key = os.getenv("SUPABASE_KEY")
-
 supabase: Client = create_client(supabase_url, supabase_key)
 
 def get_individual_id_list():
@@ -59,6 +59,7 @@ def parse_csv(path, csv_id: str):
 
     return df_list, new_individual_id_list
 
+
 def create_csv_log(file_name: str):
     """ Inserts the CSV file name in the DB and returns the generated ID """
     csv_log = {'file_name': file_name}
@@ -68,6 +69,8 @@ def create_csv_log(file_name: str):
 
 app = Flask(__name__)
 
+
+# ROUTES
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     """ 
@@ -82,30 +85,31 @@ def upload_file():
     if request.method == 'POST':
         try:
             file = request.files['csvFile']
+            
             if file.filename == '':
-                return "No selected file"
+                raise InvalidFileName()
 
             file_name = secure_filename(file.filename)
-            # file_path = os.path.join('/usr/src/app/uploaded_csv', file_name)
             file_path = os.path.join('./uploaded_csv', file_name)
             file.save(file_path)
 
             csv_id = create_csv_log(file_name)
-
             df_list, new_individual_id_list = parse_csv(file_path, csv_id)
 
             try:
                 supabase.table('record').insert(df_list).execute()
                 supabase.table('individual_record_id').insert(new_individual_id_list).execute()
+
             except Exception as e:
-                return e.__dict__["message"], 400
+                raise e
 
             os.remove(file_path)
             content = "Successfully uploaded CSV"
             return content, 204
 
         except Exception as e:
-            return f"Error: {e}"
+            return e.__dict__, 400
+
 
 @app.route('/news', methods=['GET','POST'])
 def upload_article():
@@ -120,42 +124,36 @@ def upload_article():
     """
     if request.method == 'POST':
         try:
-            image = request.files['newsImage']
+            try:
+                image = request.files['newsImage']
 
-            if image.filename == '':
-                return "No selected file"
+                if image.filename == '':
+                    raise InvalidFileName
 
-            image_name = secure_filename(image.filename)
-            image_path = os.path.join('./uploaded_img', image_name)
-            image.save(image_path)
+                image_name = secure_filename(image.filename)
+                image_path = os.path.join('./uploaded_img', image_name)
+                image.save(image_path)
 
-            if os.path.exists(image_path):
-                image_url = upload_image(image_name, image_path)
+                if os.path.exists(image_path):
+                    image_url = upload_image(image_name, image_path)
 
-            if image_url:
-                os.remove(image_path)
+                if image_url:
+                    os.remove(image_path)
 
-        except Exception as error:
-            return error.__dict__, 400
+            except Exception as e:
+                raise e
 
-        article_data = {
-            'title': request.form['newsTitle'],
-            'content': request.form['newsContent'],
-            'image_url': image_url,
-            'published': False,
-            'archived': False,
-            'publication_date': request.form['newsDate']
-        }
+            new_article = Article(request.form, image_url)
 
-        new_article = Article(article_data)
+            try:
+                data = supabase.table('article').upsert(new_article.__dict__).execute()
+                content = data.__dict__
+                return content, 201
 
-        try:
-            data = supabase.table('article').upsert(new_article.__dict__).execute()
-
+            except Exception as e:
+                raise SupabaseError(e.__dict__["message"]) from e
 
         except Exception as e:
-            content = e.__dict__["message"], 400
-            return content, 400
-
-        content = data.__dict__
-        return content, 201
+            return e.__dict__["message"], 400
+        
+        

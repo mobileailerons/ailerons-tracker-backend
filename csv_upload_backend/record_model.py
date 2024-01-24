@@ -4,7 +4,7 @@ from datetime import datetime
 
 class Record:
     """ Model for a GPS data record. """
-
+    
     @staticmethod
     def date_to_iso(excel_date_string):
         """ Parses an excel D/M/Y H:M date string and returns an ISO formatted datestring. """

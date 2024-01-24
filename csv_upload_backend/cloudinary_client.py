@@ -9,9 +9,8 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
-
-
 cloudinary_config = cloudinary.config(secure=True)
+
 
 def upload_image(image_name:str, image_path:str):
     """ Upload the image and return URL. """
@@ -21,6 +20,7 @@ def upload_image(image_name:str, image_path:str):
     decomposed_str = image_name.split(".")
     image_id = decomposed_str[0]
     print(image_id)
+
     cloudinary.uploader.upload(image_path,
                             public_id=image_id,
                             unique_filename = False,
