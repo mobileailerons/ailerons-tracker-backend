@@ -1,4 +1,4 @@
-event-id,timestamp,long,lat,tag-local-identifier,individual-local-identifier,study-name
+    event-id,timestamp,long,lat,tag-local-identifier,individual-local-identifier,study-name
 14948485921,2014-07-10 00:00:00.000,-90.905,28.054,45101,45101,Whale shark movements in Gulf of Mexico
 14948485922,2014-07-11 00:00:00.000,-91.15092187,26.70778019,45101,45101,Whale shark movements in Gulf of Mexico
 14948485923,2014-07-12 00:00:00.000,-91.19431405,26.69305808,45101,45101,Whale shark movements in Gulf of Mexico

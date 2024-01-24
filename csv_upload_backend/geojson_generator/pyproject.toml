@@ -3,8 +3,8 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "geojson-formatter"
-version = "0.0.1"
+name = "gjenerator"
+version = "1.0.0"
 dependencies = [
     "requests",
     'importlib-metadata; python_version<"3.8"'

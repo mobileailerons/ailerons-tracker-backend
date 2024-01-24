@@ -1,10 +1,11 @@
 
 import geojson
-from .supabase_client.supabaseClient import SupabaseClient
-from .utils.singletonClass import Singleton
-from .data_classes.geojsonDataItems import PointDataItem, LineDataItem
+from .supabase_client.client import SupabaseClient
+from .utils.singleton_class import Singleton
+from .data_classes.feature_models import PointFeature, LineStringFeature
 
 class GeneratorBase:
+    """ Parse DB entries and generate GeoJSON files and corresponding data entries """
     def __init__(self):
         self._client = SupabaseClient()
         # récupère la liste des individus depuis la BDD
@@ -17,43 +18,52 @@ class GeneratorBase:
             ind_records = self._client.get_ind_records(ind["id"])
             # crée un objet
             for record in ind_records:
-                pointItem = PointDataItem(record, ind)
-                self._points.append(pointItem)
+                point_item = PointFeature(record, ind)
+                self._points.append(point_item)
 
             if len(ind_records) > 1:
-                lineItem = LineDataItem(ind_records, ind)
-                self._lines.append(lineItem)
-                
+                line_item = LineStringFeature(ind_records, ind)
+                self._lines.append(line_item)
+
     def get_points(self):
+        """ Points getter """
         return self._points
-    
+
     def get_lines(self):
+        """ Lines getter """
         return self._lines
-    
+
     def get_individuals(self):
+        """ Individuals getter """
         return self._individuals
 
-    def write_files(self, filePrefix):
+    def write_files(self, file_prefix: str):
+        """ Create GeoJSON files in the parent directory
+
+        Args:
+            file_prefix (string): Identifier to append to the file name
+        """
         for point in self._points:
             counter = 1
-            filename = filePrefix + "_" + "point" + "_" + str(counter) + "_" + str(point.individual_id) + ".json"
+            filename = file_prefix + "_" + "point" + "_" + str(counter) + "_" + str(point.individual_id) + ".json"
             with open(filename, 'w',encoding="utf-8") as f:
                 f.write(geojson.dumps(point.geoJSON))
                 f.close()
 
         for line in self._lines:
             counter = 1
-            filename2 = filePrefix + "_" + "line" + "_" + str(counter) + "_" + str(line.individual_id) + ".json"
+            filename2 = file_prefix + "_" + "line" + "_" + str(counter) + "_" + str(line.individual_id) + ".json"
             with open(filename2, 'w',encoding="utf-8") as f:
                 f.write(geojson.dumps(line.geoJSON))
                 f.close()
 
     def upload_files(self):
+        """ Upload entries with GeoJSON data to the DB """
         for point in self._points:
-            self._client.postPoints(point)
+            self._client.upsert_point(point)
 
 
 class Generator(GeneratorBase, metaclass=Singleton):
-    pass
+    """ Singleton Class for the generator """
 
 generator = Generator()
