@@ -101,8 +101,8 @@ def upload_file():
                 return e.__dict__["message"], 400
 
             os.remove(file_path)
-
-            return 204
+            content = "Successfully uploaded CSV"
+            return content, 204
 
         except Exception as e:
             return f"Error: {e}"

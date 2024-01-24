@@ -18,9 +18,6 @@ ENV PYTHONUNBUFFERED=1
 #     --uid "${UID}" \
 #     appuser
 # ------------------
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y git
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
