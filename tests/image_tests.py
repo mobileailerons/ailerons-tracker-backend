@@ -15,3 +15,4 @@ class TestUploadImage():
         with pytest.raises(FileNotFoundError):
             cloudinary_client.upload_image("test.png", "./test.png")
 
+
