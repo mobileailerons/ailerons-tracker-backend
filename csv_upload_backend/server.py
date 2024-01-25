@@ -1,6 +1,8 @@
 """ Server and routes """
+import json
 import sys
 import os
+import logging
 from flask import Flask, request
 from supabase import create_client, Client
 from dotenv import load_dotenv
@@ -65,11 +67,11 @@ def create_csv_log(file_name: str):
     csv_log = {'file_name': file_name}
     data = supabase.table('csv').insert(csv_log).execute()
 
-    return data[1][0]['id']
+    return data.__dict__['data'][0]['id']
 
 app = Flask(__name__)
 
-
+print(create_csv_log("123"))
 # ROUTES
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
