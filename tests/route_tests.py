@@ -3,18 +3,14 @@
 from pathlib import Path
 import pytest
 from ailerons_tracker_backend import errors
-from ailerons_tracker_backend import cloudinary_client
+from ailerons_tracker_backend.clients import cloudinary_client
 
 resources = Path(__file__).parent / "resources"
 
 
 def test_client(client):
+    """ Test if conf file provides client for mocking API requests """
     assert client
-
-
-def test_routes(route_map):
-    print(route_map)
-    assert route_map
 
 
 class TestUploadImage():
@@ -22,17 +18,20 @@ class TestUploadImage():
 
     def test_invalid_filename(self):
         """ With invalid filename """
+
         with pytest.raises(errors.ImageNameError):
             cloudinary_client.upload_image(
                 'test', (resources / "test.png").open("rb"))
 
     def test_valid_filename(self):
         """ With valid filename but invalid path """
+
         with pytest.raises(FileNotFoundError):
             cloudinary_client.upload_image("test.png", "./test.png")
 
     def test_valid(self):
         """ valid request """
+
         r = cloudinary_client.upload_image(
             "test.png", (resources / "test.png").open("rb"))
         assert r
@@ -40,6 +39,7 @@ class TestUploadImage():
 
 def test_article_model(client):
     """ Test article model """
+
     response = client.post("/news", data={"file": {
         "newsImage": (resources / "test.png").open("rb"),
     }, "form": {
