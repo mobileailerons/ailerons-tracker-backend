@@ -37,8 +37,8 @@ class TestUploadImage():
         assert r
 
 
-def test_article_model(client):
-    """ Test article model """
+def test_news_route(client):
+    """ Test news route by mocking a request """
 
     response = client.post("/news", data={"file": {
         "newsImage": (resources / "test.png").open("rb"),
@@ -47,5 +47,14 @@ def test_article_model(client):
         "newsContent": "Lorem ipsum dolor sit amet",
         "newsDate": "2017-06-01T08:30", },
     })
+
+    assert response
+
+
+def test_upload_route(client):
+    """ Test upload route by mocking a request """
+
+    response = client.post(
+        "/upload", data={"file": (resources / "data_test.csv")})
 
     assert response

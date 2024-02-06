@@ -1,5 +1,7 @@
 """ Custom exception classes. """
 
+
+
 class CloudinaryError(Exception):
     """ Generic Cloudinary error """
     def __init__(self):

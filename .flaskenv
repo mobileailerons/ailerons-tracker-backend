@@ -1,1 +1,1 @@
-FLASK_APP=./csv_upload_backend/server.py
+FLASK_APP=./ailerons_tracker_backend/
