@@ -2,3 +2,9 @@
 .env
 aileronsVenv/
 venv/
+pycache/
+ailerons_tracker_backend.egg-info/
+.vscode/
+**/__pycache__/
+**/.pytest_cache/
+.devcontainer/
