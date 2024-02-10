@@ -45,7 +45,30 @@ def test_news_route(client):
     }, "form": {
         "newsTitle": "Fermentum leo vel orci porta non pulvinar.",
         "newsContent": "Lorem ipsum dolor sit amet",
-        "newsDate": "2017-06-01T08:30", },
+        "newsDate": "2017-06-01T08:30"},
+    })
+
+    assert response
+
+
+def test_individual_route(client):
+    """ Test individual route by mocking a request """
+
+    response = client.post("/individual", data={"file": {
+        "indImage": (resources / "test.png").open("rb"),
+    }, "form": {
+        'indName': 'Poupette',
+        'indSex': 'female',
+        'situation': 'alone',
+        'indSize': 220,
+        'mature': True,
+        'feeding': False,
+        'reproduction': False,
+        'gestation': False,
+        'jumping': True,
+        'injured': False,
+        'sick': False,
+        'parasites': False},
     })
 
     assert response

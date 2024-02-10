@@ -6,6 +6,7 @@ import os
 from flask import Flask, request
 from werkzeug.utils import secure_filename
 from ailerons_tracker_backend.models.article_model import Article
+from ailerons_tracker_backend.models.ind_model import Individual, Context
 from ailerons_tracker_backend.clients.cloudinary_client import upload_image
 from ailerons_tracker_backend.errors import InvalidFileName
 from ailerons_tracker_backend.csv_parser import csv_parser
@@ -95,12 +96,50 @@ def create_app(test_config=None):
                 os.remove(image_path)
 
             new_article = Article(request.form, image_url)
-            data = supabase.upsert_article(new_article)
-            return data, 201
+            article_data = new_article.upload()
+            return article_data.__dict__, 201
 
         except Exception as e:
             return e.__dict__
-        
-    return app
 
-    # a simple page that says hello
+    @app.post('/individual')
+    def create_individual():
+        try:
+            images = request.files.items(multi=True)
+            image_urls = []
+
+            for image in images:
+                if image.filename == '':
+                    raise InvalidFileName()
+
+                image_name = secure_filename(image.filename)
+                image_path = os.path.join('./uploaded_img', image_name)
+                image.save(image_path)
+
+                if os.path.exists(image_path):
+                    image_url = upload_image(image_name, image_path)
+
+                if image_url:
+                    os.remove(image_path)
+
+                image_urls.append(image_url)
+
+            new_ind = Individual(request.form, image_urls)
+            ind_data = new_ind.upload()
+            ind_id = ind_data.__dict__.get('id')
+
+            new_context = Context(ind_id, request.form)
+            context_data = new_context.upload()
+
+            content = {
+                'message': 'Successfully uploaded new individual',
+                'Individual data': ind_data.__dict__,
+                'Context': context_data.__dict__
+            }
+
+            return content, 201
+
+        except Exception as e:
+            return e.__dict__
+
+    return app

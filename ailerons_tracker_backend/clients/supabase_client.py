@@ -46,10 +46,10 @@ class SupabaseClient:
 
         return data.__dict__
 
-    def upsert_article(self, article: object):
+    def upsert(self, obj_data, table):
         """ Insert or update a row in table 'article' """
-        data = self._client.table("article").upsert(
-            article.__dict__).execute()
+        data = self._client.table(table).upsert(
+            obj_data.__dict__).execute()
 
         return data.__dict__
 

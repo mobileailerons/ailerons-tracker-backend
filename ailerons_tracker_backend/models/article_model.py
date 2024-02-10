@@ -1,5 +1,5 @@
 """ Article Model """
-
+from ailerons_tracker_backend.clients.supabase_client import supabase
 
 class Article:
     """ Model for a news article. """
@@ -11,3 +11,9 @@ class Article:
         self.published = published
         self.archived = archived
         self.publication_date = form["newsDate"]
+
+    def upload(self):
+        """ Insert the object as a new row in table 'individual' """
+
+        data = supabase.upsert(self, 'article')
+        return data
