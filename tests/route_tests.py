@@ -71,7 +71,7 @@ def test_individual_route(client):
         'parasites': False},
     })
 
-    assert response
+    assert response.status_code == 201
 
 
 def test_upload_route(client):
@@ -80,4 +80,4 @@ def test_upload_route(client):
     response = client.post(
         "/upload", data={"file": (resources / "data_test.csv")})
 
-    assert response
+    assert response.status_code == 201

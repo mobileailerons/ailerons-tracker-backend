@@ -36,20 +36,10 @@ class SupabaseClient:
             "*").eq(col, matcher).execute()
         return res.data
 
-    def upsert_feature(self, table: str, obj: object):
-        """ Insert or update a row in table 'point_geojson' """
-        if not table == ("point_geojson" or "line_geojson"):
-            raise TypeError(table)
-
-        data = self._client.table(table).upsert(
-            obj.__dict__).execute()
-
-        return data.__dict__
-
-    def upsert(self, obj_data, table):
+    def upsert(self, obj: object, table: str):
         """ Insert or update a row in table 'article' """
         data = self._client.table(table).upsert(
-            obj_data.__dict__).execute()
+            obj.__dict__).execute()
 
         return data.__dict__
 
