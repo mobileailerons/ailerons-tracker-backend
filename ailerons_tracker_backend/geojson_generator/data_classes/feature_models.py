@@ -1,6 +1,7 @@
 """ GeoJSON Features Models """
 import logging
 from geojson import Feature, Point, LineString
+from ailerons_tracker_backend.clients.supabase_client import supabase
 from .feature_properties import PointProperties, LineProperties
 
 
@@ -26,6 +27,12 @@ class PointFeature:
 
         logging.error("invalid geoJSON")
 
+    def upload(self):
+        """ Insert the object as a new row in table 'individual' """
+
+        data = supabase.upsert(self, 'point_geojson')
+        return data
+
 
 class LineStringFeature:
     """ Model for Linestring entry """
@@ -47,3 +54,9 @@ class LineStringFeature:
 
         if geojson.is_valid:
             return geojson
+
+    def upload(self): 
+        """ Insert the object as a new row in table 'individual' """
+
+        data = supabase.upsert(self, 'line_geojson')
+        return data

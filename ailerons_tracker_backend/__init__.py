@@ -62,11 +62,12 @@ def create_app(test_config=None):
 
                 os.remove(file_path)
                 content = "Successfully uploaded CSV"
+                app.logger.info(content)
                 return content, 204
 
             except Exception as e:
-                content = e.__dict__
-                return content, 400
+                app.logger.error(e)
+                return e, 400
 
     @app.post('/news')
     def upload_article():
@@ -97,18 +98,23 @@ def create_app(test_config=None):
 
             new_article = Article(request.form, image_url)
             article_data = new_article.upload()
+            app.logger.info(article_data)
             return article_data.__dict__, 201
 
         except Exception as e:
+            app.logger.error(e)
             return e.__dict__
 
     @app.post('/individual')
     def create_individual():
         try:
-            images = request.files.items(multi=True)
+            items = request.files.items(multi=True)
             image_urls = []
 
-            for image in images:
+            for item in items:
+                image = item[1]
+                app.logger.info(image)
+
                 if image.filename == '':
                     raise InvalidFileName()
 
@@ -137,9 +143,11 @@ def create_app(test_config=None):
                 'Context': context_data.__dict__
             }
 
+            app.logger.info(content)
             return content, 201
 
         except Exception as e:
+            app.logger.error(e)
             return e.__dict__
 
     return app
