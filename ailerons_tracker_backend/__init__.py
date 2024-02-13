@@ -3,16 +3,14 @@
 __version__ = "0.6"
 
 import os
-from pathlib import Path
 from flask import Flask, request
 import postgrest
-from werkzeug.utils import secure_filename
 from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.models.ind_model import Individual, Context
 from ailerons_tracker_backend.csv_parser import csv_parser
 from ailerons_tracker_backend.geojson_generator.generator import Generator
 from .upload_image import upload_image
-from .errors import CloudinaryError, GeneratorError, ImageNameError, InvalidFile, SupabaseError
+from .errors import CloudinaryError, GeneratorError, InvalidFile
 from .clients.supabase_client import supabase
 
 
@@ -47,7 +45,6 @@ def create_app(test_config=None):
         try:
             # A priori on aurait deux fichiers donc j'ai donné un nouveau nom à celui ci "
             file_name, file_path = csv_parser.prepare_csv(request)
-
             csv_id = supabase.create_csv_log(file_name)
 
             # plus besoin de la table jointe si j'ai bien compris mais je n'y ai pas touché
@@ -61,32 +58,21 @@ def create_app(test_config=None):
             os.remove(file_path)
 
             generator = Generator()
-
             generator.generate()
-            generator.upload_files()
 
-            content = {"message": "CSVs uploaded and geoJSON generated",
-                       "CSV ID": csv_id}
-
-            return content, 200
+            return "CSVs uploaded and geoJSONs generated", 200
 
         # Erreur supabase
         except postgrest.exceptions.APIError as e:
             app.logger.error(e.message)
-            return SupabaseError(e), 304
+            return e.message, 304
 
         except GeneratorError as e:
             app.logger.error(e.message)
-            app.logger.error(e.base_error)
-            return e, 500
-
-        except SupabaseError as e:
-            app.logger.error(e.message)
-            app.logger.error(e.base_error)
-            return e, 204
+            return e.message, 500
 
         except InvalidFile as e:
-            app.logger.error(e.message)
+            app.logger.error(e)
             return e, 400
 
     @app.post('/news')
@@ -101,29 +87,18 @@ def create_app(test_config=None):
             error, 400: Error while attempting insert, bad request. """
 
         try:
-            image = request.files['newsImage']
-            image_url = upload_image(image)
-
-            new_article = Article(request.form, image_url)
-            article_data = new_article.upload()
+            image_url = upload_image(request.files['newsImage'])
+            article_data = Article(request.form, image_url).upload()
 
             return article_data, 200
 
-        except InvalidFile as e:
-            app.logger.error(e.message)
-            return e.message, 400
-
-        except CloudinaryError:
+        except (InvalidFile, CloudinaryError) as e:
             app.logger.error(e.message)
             return e.message, 400
 
         except postgrest.exceptions.APIError as e:
             app.logger.error(e.message)
             return e.message, 304
-
-        except ImageNameError as e:
-            app.logger.error(e)
-            return e.message, 400
 
     @app.post('/individual')
     def create_individual():
@@ -132,19 +107,14 @@ def create_app(test_config=None):
             image_urls = []
 
             for item in items:
-                image = item[1]
-
-                image_url = upload_image(image)
+                image_url = upload_image(item[1])
 
                 image_urls.append(image_url)
 
-            app.logger.critical(request.form)
-            new_ind = Individual(request.form, image_urls)
-            ind_data = new_ind.upload()
+            ind_data = Individual(request.form, image_urls).upload()
             ind_id = ind_data.__dict__.get('id')
 
-            new_context = Context(ind_id, request.form)
-            context_data = new_context.upload()
+            context_data = Context(ind_id, request.form).upload()
 
             content = {
                 'message': 'Successfully uploaded new individual',
@@ -152,17 +122,13 @@ def create_app(test_config=None):
                 'Context': context_data.__dict__
             }
 
-            return content, 201
+            return content, 200
 
         except postgrest.exceptions.APIError as e:
             app.logger.error(e.message)
             return e.message, 304
 
         except InvalidFile as e:
-            app.logger.error(e.message)
-            return e.message, 400
-
-        except ImageNameError as e:
             app.logger.error(e.message)
             return e.message, 400
 
