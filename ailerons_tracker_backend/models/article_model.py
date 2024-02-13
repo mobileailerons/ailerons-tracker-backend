@@ -1,6 +1,7 @@
 """ Article Model """
 from ailerons_tracker_backend.clients.supabase_client import supabase
 
+
 class Article:
     """ Model for a news article. """
 

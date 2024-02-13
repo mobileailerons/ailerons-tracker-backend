@@ -1,17 +1,19 @@
 """ Configuration and factory for the app """
 
-__version__ = "0.5"
+__version__ = "0.6"
 
 import os
+from pathlib import Path
 from flask import Flask, request
+import postgrest
 from werkzeug.utils import secure_filename
 from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.models.ind_model import Individual, Context
-from ailerons_tracker_backend.clients.cloudinary_client import upload_image
-from ailerons_tracker_backend.errors import InvalidFileName
 from ailerons_tracker_backend.csv_parser import csv_parser
+from ailerons_tracker_backend.geojson_generator.generator import Generator
+from .upload_image import upload_image
+from .errors import CloudinaryError, GeneratorError, ImageNameError, InvalidFile, SupabaseError
 from .clients.supabase_client import supabase
-from .errors import InvalidFileName
 
 
 def create_app(test_config=None):
@@ -34,40 +36,58 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route('/upload', methods=['GET', 'POST'])
+    @app.post('/upload')
     def upload_file():
         """ Parse a CSV file and insert data in DB
 
         Returns:
-            204: Successful operation
+            201: Successful operation
             e: Error while attempting insert in DB """
 
-        if request.method == 'POST':
-            try:
-                file = request.files['csvFile']
+        try:
+            # A priori on aurait deux fichiers donc j'ai donné un nouveau nom à celui ci "
+            file_name, file_path = csv_parser.prepare_csv(request)
 
-                if file.filename == '':
-                    raise InvalidFileName()
+            csv_id = supabase.create_csv_log(file_name)
 
-                file_name = secure_filename(file.filename)
-                file_path = os.path.join('./uploaded_csv', file_name)
-                file.save(file_path)
+            # plus besoin de la table jointe si j'ai bien compris mais je n'y ai pas touché
+            df_list, new_individual_id_list = csv_parser.parse_csv(
+                file_path, csv_id)
 
-                csv_id = supabase.create_csv_log(file_name)
-                df_list, new_individual_id_list = csv_parser.parse_csv(
-                    file_path, csv_id)
-                supabase.batch_insert("record", df_list)
-                supabase.batch_insert("individual_record_id",
-                                      new_individual_id_list)
+            supabase.batch_insert("record", df_list)
+            supabase.batch_insert("individual_record_id",
+                                  new_individual_id_list)
 
-                os.remove(file_path)
-                content = "Successfully uploaded CSV"
-                app.logger.info(content)
-                return content, 204
+            os.remove(file_path)
 
-            except Exception as e:
-                app.logger.error(e)
-                return e, 400
+            generator = Generator()
+
+            generator.generate()
+            generator.upload_files()
+
+            content = {"message": "CSVs uploaded and geoJSON generated",
+                       "CSV ID": csv_id}
+
+            return content, 200
+
+        # Erreur supabase
+        except postgrest.exceptions.APIError as e:
+            app.logger.error(e.message)
+            return SupabaseError(e), 304
+
+        except GeneratorError as e:
+            app.logger.error(e.message)
+            app.logger.error(e.base_error)
+            return e, 500
+
+        except SupabaseError as e:
+            app.logger.error(e.message)
+            app.logger.error(e.base_error)
+            return e, 204
+
+        except InvalidFile as e:
+            app.logger.error(e.message)
+            return e, 400
 
     @app.post('/news')
     def upload_article():
@@ -82,28 +102,28 @@ def create_app(test_config=None):
 
         try:
             image = request.files['newsImage']
-
-            if image.filename == '':
-                raise InvalidFileName()
-
-            image_name = secure_filename(image.filename)
-            image_path = os.path.join('./uploaded_img', image_name)
-            image.save(image_path)
-
-            if os.path.exists(image_path):
-                image_url = upload_image(image_name, image_path)
-
-            if image_url:
-                os.remove(image_path)
+            image_url = upload_image(image)
 
             new_article = Article(request.form, image_url)
             article_data = new_article.upload()
-            app.logger.info(article_data)
-            return article_data.__dict__, 201
 
-        except Exception as e:
+            return article_data, 200
+
+        except InvalidFile as e:
+            app.logger.error(e.message)
+            return e.message, 400
+
+        except CloudinaryError:
+            app.logger.error(e.message)
+            return e.message, 400
+
+        except postgrest.exceptions.APIError as e:
+            app.logger.error(e.message)
+            return e.message, 304
+
+        except ImageNameError as e:
             app.logger.error(e)
-            return e.__dict__
+            return e.message, 400
 
     @app.post('/individual')
     def create_individual():
@@ -113,23 +133,12 @@ def create_app(test_config=None):
 
             for item in items:
                 image = item[1]
-                app.logger.info(image)
 
-                if image.filename == '':
-                    raise InvalidFileName()
-
-                image_name = secure_filename(image.filename)
-                image_path = os.path.join('./uploaded_img', image_name)
-                image.save(image_path)
-
-                if os.path.exists(image_path):
-                    image_url = upload_image(image_name, image_path)
-
-                if image_url:
-                    os.remove(image_path)
+                image_url = upload_image(image)
 
                 image_urls.append(image_url)
 
+            app.logger.critical(request.form)
             new_ind = Individual(request.form, image_urls)
             ind_data = new_ind.upload()
             ind_id = ind_data.__dict__.get('id')
@@ -143,11 +152,18 @@ def create_app(test_config=None):
                 'Context': context_data.__dict__
             }
 
-            app.logger.info(content)
             return content, 201
 
-        except Exception as e:
-            app.logger.error(e)
-            return e.__dict__
+        except postgrest.exceptions.APIError as e:
+            app.logger.error(e.message)
+            return e.message, 304
+
+        except InvalidFile as e:
+            app.logger.error(e.message)
+            return e.message, 400
+
+        except ImageNameError as e:
+            app.logger.error(e.message)
+            return e.message, 400
 
     return app

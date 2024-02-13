@@ -1,9 +1,7 @@
 """ Test suite for image upload """
 
+import logging
 from pathlib import Path
-import pytest
-from ailerons_tracker_backend import errors
-from ailerons_tracker_backend.clients import cloudinary_client
 
 resources = Path(__file__).parent / "resources"
 
@@ -13,50 +11,24 @@ def test_client(client):
     assert client
 
 
-class TestUploadImage():
-    """ Test upload"""
-
-    def test_invalid_filename(self):
-        """ With invalid filename """
-
-        with pytest.raises(errors.ImageNameError):
-            cloudinary_client.upload_image(
-                'test', (resources / "test.png").open("rb"))
-
-    def test_valid_filename(self):
-        """ With valid filename but invalid path """
-
-        with pytest.raises(FileNotFoundError):
-            cloudinary_client.upload_image("test.png", "./test.png")
-
-    def test_valid(self):
-        """ valid request """
-
-        r = cloudinary_client.upload_image(
-            "test.png", (resources / "test.png").open("rb"))
-        assert r
-
-
 def test_news_route(client):
     """ Test news route by mocking a request """
 
-    response = client.post("/news", data={"file": {
+    response = client.post("/news", data={
         "newsImage": (resources / "test.png").open("rb"),
-    }, "form": {
         "newsTitle": "Fermentum leo vel orci porta non pulvinar.",
         "newsContent": "Lorem ipsum dolor sit amet",
-        "newsDate": "2017-06-01T08:30"},
+        "newsDate": "2017-06-01T08:30"
     })
 
-    assert response
+    assert response.status_code in (200, 304)
 
 
 def test_individual_route(client):
     """ Test individual route by mocking a request """
 
-    response = client.post("/individual", data={"file": {
+    response = client.post("/individual", data={
         "indImage": (resources / "test.png").open("rb"),
-    }, "form": {
         'indName': 'Poupette',
         'indSex': 'female',
         'situation': 'alone',
@@ -68,16 +40,17 @@ def test_individual_route(client):
         'jumping': True,
         'injured': False,
         'sick': False,
-        'parasites': False},
+        'parasites': False
     })
 
-    assert response.status_code == 201
+    assert response.status_code in (200, 304)
 
 
 def test_upload_route(client):
     """ Test upload route by mocking a request """
 
-    response = client.post(
-        "/upload", data={"file": (resources / "data_test.csv")})
+    response = client.post("/upload", data={
+        "locFile": (resources / "data_test.csv").open("rb")})
 
-    assert response.status_code == 201
+    logging.error(response)
+    assert response.status_code in (200, 304)

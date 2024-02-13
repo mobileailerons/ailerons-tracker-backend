@@ -1,5 +1,6 @@
 """ Supabase Client test suite """
 from pathlib import Path
+import postgrest
 import pytest
 
 from ailerons_tracker_backend.clients.supabase_client import SupabaseClient
@@ -32,21 +33,24 @@ def test_get_individual_ids():
     assert isinstance(data, list)
 
 
+recs = supabase.get_all("record")
+inds = supabase.get_all("individual")
+
+test_point = PointFeature(recs[0], inds[0])
+
+
 class TestUpsertFeature():
     """ Test inserting or updating a row in table 'point' """
 
     def test_valid_type(self):
         """ Test inserting in feature table """
 
-        recs = supabase.get_all("record")
-        inds = supabase.get_all("individual")
+        res = supabase.upsert(test_point, 'point_geojson')
 
-        test_point = PointFeature(recs[0], inds[0])
-        res = supabase.upsert_feature('point_geojson', test_point)
         assert isinstance(res, dict)
 
     def test_invalid_type(self):
         """ Test attempting insert in wrong table """
-        not_a_point = object()
-        with pytest.raises(TypeError):
-            supabase.upsert_feature('individual', not_a_point)
+
+        with pytest.raises(postgrest.exceptions.APIError):
+            supabase.upsert(test_point, 'individual')

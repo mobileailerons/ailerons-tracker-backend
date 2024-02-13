@@ -1,3 +1,4 @@
+""" Individual and Context models """
 from ailerons_tracker_backend.clients.supabase_client import supabase
 
 
