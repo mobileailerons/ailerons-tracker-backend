@@ -38,8 +38,8 @@ class LineStringFeature:
     """ Model for Linestring entry """
 
     def __init__(self, records, individual):
-        self.record_ids = map(lambda record: record["id"], records)
-        self.csv_ids = map(lambda record: record["csv_id"], records)
+        self.record_ids = list(map(lambda record: record["id"], records))
+        self.csv_ids = list(map(lambda record: record["csv_id"], records))
         self.individual_id = individual["id"]
         self.geojson = self.__to_line_feature(records, individual)
 
@@ -55,7 +55,7 @@ class LineStringFeature:
         if geojson.is_valid:
             return geojson
 
-    def upload(self): 
+    def upload(self):
         """ Insert the object as a new row in table 'individual' """
 
         data = supabase.upsert(self, 'line_geojson')
