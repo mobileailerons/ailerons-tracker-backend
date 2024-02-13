@@ -36,11 +36,7 @@ def create_app(test_config=None):
 
     @app.post('/upload')
     def upload_file():
-        """ Parse a CSV file and insert data in DB
-
-        Returns:
-            201: Successful operation
-            e: Error while attempting insert in DB """
+        """ Parse a CSV file and insert data in DB """
 
         try:
             # A priori on aurait deux fichiers donc j'ai donné un nouveau nom à celui ci "
@@ -77,14 +73,7 @@ def create_app(test_config=None):
 
     @app.post('/news')
     def upload_article():
-        """ Parse form data and insert news article in DB.
-
-        Raises:
-            CloudinaryError: something went wrong when uploading the image file.
-
-        Returns:
-            data, 201: Newly created row data, document successfully created.
-            error, 400: Error while attempting insert, bad request. """
+        """ Parse form data and insert news article in DB """
 
         try:
             image_url = upload_image(request.files['newsImage'])
@@ -112,14 +101,14 @@ def create_app(test_config=None):
                 image_urls.append(image_url)
 
             ind_data = Individual(request.form, image_urls).upload()
-            ind_id = ind_data.__dict__.get('id')
+            ind_id = ind_data.get('id')
 
             context_data = Context(ind_id, request.form).upload()
 
             content = {
                 'message': 'Successfully uploaded new individual',
-                'Individual data': ind_data.__dict__,
-                'Context': context_data.__dict__
+                'Individual data': ind_data,
+                'Context': context_data
             }
 
             return content, 200
