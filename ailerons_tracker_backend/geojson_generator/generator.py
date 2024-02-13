@@ -66,7 +66,9 @@ class GeneratorBase:
             self._points_collections.append(
                 geojson.FeatureCollection(ind_points))
 
-    def write_files(self, file_prefix: str):
+        self.__upload_files()
+
+    def _write_files(self, file_prefix: str):
         """ Create GeoJSON files in the parent directory
 
         Args:
@@ -91,7 +93,7 @@ class GeneratorBase:
                 f.write(geojson.dumps(line.geoJSON))
                 f.close()
 
-    def upload_files(self):
+    def __upload_files(self):
         """ Upload entries with GeoJSON data to the DB """
         logging.debug("UPLOADING")
         for col in self._points_collections:

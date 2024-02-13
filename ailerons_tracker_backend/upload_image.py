@@ -1,9 +1,8 @@
+""" Image upload function """
 import os
 from pathlib import Path
 from ailerons_tracker_backend.clients import cloudinary_client
-from ailerons_tracker_backend.errors import CloudinaryError
-
-from ailerons_tracker_backend.errors import InvalidFile
+from ailerons_tracker_backend.errors import CloudinaryError, InvalidFile
 
 
 def upload_image(image):
@@ -31,6 +30,5 @@ def upload_image(image):
     except CloudinaryError as e:
         raise e from e
 
-    if image_url:
-        os.remove(image_path)
-        return image_url
+    os.remove(image_path)
+    return image_url
