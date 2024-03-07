@@ -1,10 +1,13 @@
 """ Transfrom database entries into geoJSON files """
+import json
 import logging
+import os
 import geojson
 from ailerons_tracker_backend.clients.supabase_client import supabase
 from ailerons_tracker_backend.errors import GeneratorLineError, GeneratorPointError
 from ailerons_tracker_backend.utils.singleton_class import Singleton
 from .data_classes.feature_models import PointFeature, LineStringFeature
+import python_mts.scripts.mts_handler as mts
 
 
 class GeneratorBase:
@@ -16,6 +19,7 @@ class GeneratorBase:
         self._points: list[list[PointFeature]] = []
         self._lines: list[LineStringFeature] = []
         self._points_collections: list[geojson.FeatureCollection] = []
+        self.handler = mts.MtsHandler()
 
     def get_points(self):
         """ Points getter """
@@ -67,22 +71,14 @@ class GeneratorBase:
                 geojson.FeatureCollection(ind_points))
 
         self.__upload_files()
+        self.__write_files("test")
 
-    def _write_files(self, file_prefix: str):
+    def __write_files(self, file_prefix: str):
         """ Create GeoJSON files in the parent directory
 
         Args:
             file_prefix (string): Identifier to append to the file name
         """
-
-        for point in self._points:
-            counter = 1
-            filename = file_prefix + "_" + "point" + "_" + \
-                str(counter) + "_" + str(point.individual_id) + ".json"
-
-            with open(filename, 'w', encoding="utf-8") as f:
-                f.write(geojson.dumps(point.geoJSON))
-                f.close()
 
         for line in self._lines:
             counter = 1
@@ -90,8 +86,37 @@ class GeneratorBase:
                 str(counter) + "_" + str(line.individual_id) + ".json"
 
             with open(filename2, 'w', encoding="utf-8") as f:
-                f.write(geojson.dumps(line.geoJSON))
+                f.write(geojson.dumps(line.geojson))
                 f.close()
+
+                try:
+                    self.__publish_new_ts(filename2)
+                except Exception as e:
+                    raise e
+
+    def __publish_new_ts(self, filename: str):
+        self.handler.upload_source("test", filename, True)
+
+        source_url = self.handler.get_source("test").json()['id']
+        logging.info(source_url)
+        test_recipe: dict = {"version": 1,
+                             "layers": {
+                                 "trees": {
+                                     "source": source_url,
+                                     "minzoom": 4,
+                                     "maxzoom": 8
+                                 }
+                             }
+                             }
+        
+        with open("test_recipe.json", mode="w", encoding="utf-8") as f:
+            f.write(json.dumps(test_recipe))
+            f.close()
+
+        self.handler.create_ts(
+            "test", "test", recipe_path="test_recipe.json", private=True)
+        r = self.handler.publish_ts("test")
+        logging.info(r.json())
 
     def __upload_files(self):
         """ Upload entries with GeoJSON data to the DB """

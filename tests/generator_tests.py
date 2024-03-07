@@ -1,9 +1,12 @@
 """ Generator test suite """
 
+import logging
 from geojson import FeatureCollection
+from python_mts.scripts.mts_handler import MtsHandler
 from ailerons_tracker_backend.geojson_generator.data_classes.feature_models import LineStringFeature, PointFeature
 from ailerons_tracker_backend.geojson_generator.generator import Generator
 
+mts = MtsHandler()
 generator = Generator()
 
 

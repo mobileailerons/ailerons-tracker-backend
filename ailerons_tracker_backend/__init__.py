@@ -12,6 +12,7 @@ from ailerons_tracker_backend.geojson_generator.generator import Generator
 from .upload_image import upload_image
 from .errors import CloudinaryError, GeneratorError, InvalidFile
 from .clients.supabase_client import supabase
+import python_mts.scripts.mts_handler as mts
 
 
 def create_app(test_config=None):
@@ -55,7 +56,7 @@ def create_app(test_config=None):
 
             generator = Generator()
             generator.generate()
-
+            
             return "CSVs uploaded and geoJSONs generated", 200
 
         # Erreur supabase
