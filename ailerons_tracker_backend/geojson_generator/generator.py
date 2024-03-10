@@ -1,13 +1,13 @@
 """ Transfrom database entries into geoJSON files """
 import json
 import logging
-import os
+from datetime import datetime
 import geojson
+import python_mts.scripts.mts_handler as mts
 from ailerons_tracker_backend.clients.supabase_client import supabase
 from ailerons_tracker_backend.errors import GeneratorLineError, GeneratorPointError
 from ailerons_tracker_backend.utils.singleton_class import Singleton
 from .data_classes.feature_models import PointFeature, LineStringFeature
-import python_mts.scripts.mts_handler as mts
 
 
 class GeneratorBase:
@@ -37,8 +37,48 @@ class GeneratorBase:
         """ Individuals getter """
         return self._individuals
 
-    def generate(self):
-        """ Generate GeoJSON objects from fetched data
+    def update(self):
+        """ Complete job: 
+        - generate geojson data 
+        - insert in db 
+        - write geojson files, upload as sources
+        - update tileset recipe
+        - create and publish new TS from recipe 
+
+        Raises:
+            e: _description_
+        """
+        self.__generate_geojson()
+
+        self.__upload_geojson()
+
+        recipe = {
+            "version": 1,
+        }
+
+        layers = {}
+
+        for line in self._lines:
+            filename = self.__write_geojson_file(line)
+
+            try:
+                self.handler.upload_source(filename, filename, True)
+
+                src_id = self.handler.get_source(filename).json()['id']
+                layer = {"source": src_id, "minzoom": 4, "maxzoom": 8}
+                layers[line.individual_id] = layer
+
+            except Exception as e:
+                raise e
+
+        recipe["layers"] = layers
+
+        self.__write_recipe(recipe)
+
+        self.__publish_new_ts()
+
+    def __generate_geojson(self):
+        """ Generate GeoJSON features from fetched data
 
         Raises:
             GeneratorPointError: Error generating Point Features
@@ -50,6 +90,7 @@ class GeneratorBase:
                 "individual_id", ind["id"], "record")
 
             ind_points = []
+
             try:
                 for record in ind_records:
                     point_item = PointFeature(record, ind)
@@ -70,57 +111,54 @@ class GeneratorBase:
             self._points_collections.append(
                 geojson.FeatureCollection(ind_points))
 
-        self.__upload_files()
-        self.__write_files("test")
-
-    def __write_files(self, file_prefix: str):
-        """ Create GeoJSON files in the parent directory
+    def __write_geojson_file(self, line: LineStringFeature):
+        """ Create or update a geoJSON file
 
         Args:
-            file_prefix (string): Identifier to append to the file name
+            line (LineStringFeature)
+
+        Returns:
+            filename (str): name of the geoJSON file
         """
 
-        for line in self._lines:
-            counter = 1
-            filename2 = file_prefix + "_" + "line" + "_" + \
-                str(counter) + "_" + str(line.individual_id) + ".json"
+        filename = "line" + "_" + str(line.individual_id) + ".json"
 
-            with open(filename2, 'w', encoding="utf-8") as f:
-                f.write(geojson.dumps(line.geojson))
-                f.close()
-
-                try:
-                    self.__publish_new_ts(filename2)
-                except Exception as e:
-                    raise e
-
-    def __publish_new_ts(self, filename: str):
-        self.handler.upload_source("test", filename, True)
-
-        source_url = self.handler.get_source("test").json()['id']
-        logging.info(source_url)
-        test_recipe: dict = {"version": 1,
-                             "layers": {
-                                 "trees": {
-                                     "source": source_url,
-                                     "minzoom": 4,
-                                     "maxzoom": 8
-                                 }
-                             }
-                             }
-        
-        with open("test_recipe.json", mode="w", encoding="utf-8") as f:
-            f.write(json.dumps(test_recipe))
+        with open(filename, 'w', encoding="utf-8") as f:
+            f.seek(0)
+            f.write(geojson.dumps(line.geojson))
+            f.truncate()
             f.close()
 
+        return filename
+
+    def __write_recipe(self, recipe):
+        """ Create or update a recipe json file
+
+        Args:
+            recipe (dict): recipe data.
+        """
+
+        with open("recipe.json", mode="w", encoding="utf-8") as f:
+            f.seek(0)
+            f.write(json.dumps(recipe))
+            f.truncate()
+            f.close()
+
+    def __publish_new_ts(self):
+        """ Create and publish a new tileset through MTS Client
+        """
+
+        ts_name = datetime.today().strftime('%d-%m-%Y')
+
         self.handler.create_ts(
-            "test", "test", recipe_path="test_recipe.json", private=True)
-        r = self.handler.publish_ts("test")
+            ts_name, ts_name, recipe_path="recipe.json", private=True)
+
+        r = self.handler.publish_ts(ts_name)
         logging.info(r.json())
 
-    def __upload_files(self):
+    def __upload_geojson(self):
         """ Upload entries with GeoJSON data to the DB """
-        logging.debug("UPLOADING")
+
         for col in self._points_collections:
             supabase.upsert(col, 'point_geojson')
 
