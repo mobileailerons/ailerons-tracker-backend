@@ -3,9 +3,11 @@
 
 Cloner le repo
 
-Créer un nouvel environnement virtuel: $ python -m venv .venv
+Créer un nouvel environnement virtuel: $ python -m venv .venv 
 
-Créer le script qui permet de réactiver l'environnement à chaque utilisation: $ .\\.venv\Scripts\activate
+Créer le script qui permet de réactiver l'environnement à chaque utilisation: 
+Windows: $ .\\.venv\Scripts\activate 
+Mac & Linux: $ source .venv/bin/activate
 
 Si l'environnement ne s'active pas tout seul au lancement du projet et que l'étape précédente a été suivie: $ activate
 
