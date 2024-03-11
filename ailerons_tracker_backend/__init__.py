@@ -55,8 +55,8 @@ def create_app(test_config=None):
             os.remove(file_path)
 
             generator = Generator()
-            generator.generate()
-            
+            generator.update()
+
             return "CSVs uploaded and geoJSONs generated", 200
 
         # Erreur supabase

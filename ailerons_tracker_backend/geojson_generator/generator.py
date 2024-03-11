@@ -48,9 +48,9 @@ class GeneratorBase:
         Raises:
             e: _description_
         """
-        self.__generate_geojson()
+        self.generate_geojson()
 
-        self.__upload_geojson()
+        self.upload_geojson()
 
         recipe = {
             "version": 1,
@@ -59,12 +59,13 @@ class GeneratorBase:
         layers = {}
 
         for line in self._lines:
-            filename = self.__write_geojson_file(line)
+            filename = self.write_geojson_file(line)
+            src_id = filename.strip(".json")
 
             try:
-                self.handler.upload_source(filename, filename, True)
+                self.handler.upload_source(src_id, filename, True)
 
-                src_id = self.handler.get_source(filename).json()['id']
+                src_id = self.handler.get_source(src_id).json()['id']
                 layer = {"source": src_id, "minzoom": 4, "maxzoom": 8}
                 layers[line.individual_id] = layer
 
@@ -73,11 +74,11 @@ class GeneratorBase:
 
         recipe["layers"] = layers
 
-        self.__write_recipe(recipe)
+        self.write_recipe(recipe)
 
-        self.__publish_new_ts()
+        self.publish_new_ts()
 
-    def __generate_geojson(self):
+    def generate_geojson(self):
         """ Generate GeoJSON features from fetched data
 
         Raises:
@@ -111,7 +112,7 @@ class GeneratorBase:
             self._points_collections.append(
                 geojson.FeatureCollection(ind_points))
 
-    def __write_geojson_file(self, line: LineStringFeature):
+    def write_geojson_file(self, line: LineStringFeature):
         """ Create or update a geoJSON file
 
         Args:
@@ -133,23 +134,27 @@ class GeneratorBase:
         except Exception as e:
             raise GeoJSONFileWriteError(e) from e
 
-    def __write_recipe(self, recipe):
+    def write_recipe(self, recipe: dict, rcp_file_name: str = None):
         """ Create or update a recipe json file
 
         Args:
             recipe (dict): recipe data.
         """
 
+        if not rcp_file_name:
+            rcp_file_name = "recipe.json"
+
         try:
-            with open("recipe.json", mode="w", encoding="utf-8") as f:
+            with open(rcp_file_name, mode="w", encoding="utf-8") as f:
                 f.seek(0)
                 f.write(json.dumps(recipe))
                 f.truncate()
                 f.close()
+
         except Exception as e:
             raise CreateRecipeError(e) from e
 
-    def __publish_new_ts(self):
+    def publish_new_ts(self):
         """ Create and publish a new tileset through MTS Client """
 
         ts_name = datetime.today().strftime('%d-%m-%Y')
@@ -160,7 +165,7 @@ class GeneratorBase:
         r = self.handler.publish_ts(ts_name)
         logging.info(r.json())
 
-    def __upload_geojson(self):
+    def upload_geojson(self):
         """ Upload entries with GeoJSON data to the DB """
 
         for col in self._points_collections:
