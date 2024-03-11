@@ -41,6 +41,22 @@ class GeneratorLineError(GeneratorError):
         self.message = f"Something went wrong while generating LineFeatures with {obj}"
 
 
+class GeoJSONFileWriteError(GeneratorError):
+    """ Could not create or update geoJSON file """
+
+    def __init__(self, base_error):
+        super().__init__(base_error)
+        self.message = "Something went wrong while writing GeoJSON file"
+
+
+class CreateRecipeError(GeneratorError):
+    """ Could not create or update tileset recipe file """
+
+    def __init__(self, base_error):
+        super().__init__(base_error)
+        self.message = "Something went wrong while writing recipe file"
+
+
 class ParserError(Exception):
     """ Invalid file name """
 

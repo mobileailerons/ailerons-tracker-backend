@@ -5,7 +5,7 @@ from datetime import datetime
 import geojson
 import python_mts.scripts.mts_handler as mts
 from ailerons_tracker_backend.clients.supabase_client import supabase
-from ailerons_tracker_backend.errors import GeneratorLineError, GeneratorPointError
+from ailerons_tracker_backend.errors import GeneratorLineError, GeneratorPointError, GeoJSONFileWriteError, CreateRecipeError
 from ailerons_tracker_backend.utils.singleton_class import Singleton
 from .data_classes.feature_models import PointFeature, LineStringFeature
 
@@ -120,16 +120,18 @@ class GeneratorBase:
         Returns:
             filename (str): name of the geoJSON file
         """
+        try:
+            filename = "line" + "_" + str(line.individual_id) + ".json"
 
-        filename = "line" + "_" + str(line.individual_id) + ".json"
+            with open(filename, 'w', encoding="utf-8") as f:
+                f.seek(0)
+                f.write(geojson.dumps(line.geojson))
+                f.truncate()
+                f.close()
 
-        with open(filename, 'w', encoding="utf-8") as f:
-            f.seek(0)
-            f.write(geojson.dumps(line.geojson))
-            f.truncate()
-            f.close()
-
-        return filename
+            return filename
+        except Exception as e:
+            raise GeoJSONFileWriteError(e) from e
 
     def __write_recipe(self, recipe):
         """ Create or update a recipe json file
@@ -138,15 +140,17 @@ class GeneratorBase:
             recipe (dict): recipe data.
         """
 
-        with open("recipe.json", mode="w", encoding="utf-8") as f:
-            f.seek(0)
-            f.write(json.dumps(recipe))
-            f.truncate()
-            f.close()
+        try:
+            with open("recipe.json", mode="w", encoding="utf-8") as f:
+                f.seek(0)
+                f.write(json.dumps(recipe))
+                f.truncate()
+                f.close()
+        except Exception as e:
+            raise CreateRecipeError(e) from e
 
     def __publish_new_ts(self):
-        """ Create and publish a new tileset through MTS Client
-        """
+        """ Create and publish a new tileset through MTS Client """
 
         ts_name = datetime.today().strftime('%d-%m-%Y')
 
