@@ -4,7 +4,6 @@ from geojson import Feature, Point, LineString
 from ailerons_tracker_backend.clients.supabase_client import supabase
 from .feature_properties import PointProperties, LineProperties
 
-
 class PointFeature:
     """ Model for Point entry """
 
@@ -46,6 +45,7 @@ class LineStringFeature:
     @staticmethod
     def __to_line_feature(ind_records, individual):
         """ Create a LineString GeoJSON Feature """
+        
         props = LineProperties(ind_records, individual)
         coordinates = list(
             map(lambda record: (record["longitude"], record["latitude"]), ind_records))
