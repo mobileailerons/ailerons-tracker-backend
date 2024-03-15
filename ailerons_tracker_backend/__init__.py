@@ -8,7 +8,7 @@ from flask import Flask, request
 import postgrest
 from flask_cors import CORS
 from ailerons_tracker_backend.models.article_model import Article
-from ailerons_tracker_backend.models.ind_model import Individual, Context
+from ailerons_tracker_backend.models.individual_model import Individual, Context
 from ailerons_tracker_backend.csv_parser import csv_parser
 from ailerons_tracker_backend.geojson_generator.generator import Generator
 from ailerons_tracker_backend.blueprints.ind_select import ind_select
@@ -63,10 +63,10 @@ def create_app(test_config=None):
             csv_id = supabase.create_csv_log(file_name)
 
             # plus besoin de la table jointe si j'ai bien compris mais je n'y ai pas touché
-            df_list, new_individual_id_list = csv_parser.parse_csv(
+            record_list, new_individual_id_list = csv_parser.parse_csv(
                 file_path, csv_id)
 
-            supabase.batch_insert("record", df_list)
+            supabase.batch_insert("record", record_list)
             supabase.batch_insert("individual_record_id",
                                   new_individual_id_list)
 
