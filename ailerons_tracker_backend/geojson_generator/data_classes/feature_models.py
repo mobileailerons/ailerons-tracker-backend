@@ -4,7 +4,6 @@ from geojson import Feature, Point, LineString
 from ailerons_tracker_backend.clients.supabase_client import supabase
 from .feature_properties import PointProperties, LineProperties
 
-
 class PointFeature:
     """ Model for Point entry """
 
@@ -28,7 +27,7 @@ class PointFeature:
         logging.error("invalid geoJSON")
 
     def upload(self):
-        """ Insert the object as a new row in table 'individual' """
+        """ Insert the object as a new row in table 'point_geojson' """
 
         data = supabase.upsert(self, 'point_geojson')
         return data
@@ -46,6 +45,7 @@ class LineStringFeature:
     @staticmethod
     def __to_line_feature(ind_records, individual):
         """ Create a LineString GeoJSON Feature """
+        
         props = LineProperties(ind_records, individual)
         coordinates = list(
             map(lambda record: (record["longitude"], record["latitude"]), ind_records))
@@ -56,7 +56,7 @@ class LineStringFeature:
             return geojson
 
     def upload(self):
-        """ Insert the object as a new row in table 'individual' """
+        """ Insert the object as a new row in table 'line_geojson' """
 
         data = supabase.upsert(self, 'line_geojson')
         return data

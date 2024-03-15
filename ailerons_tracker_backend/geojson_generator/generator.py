@@ -95,7 +95,7 @@ class GeneratorBase:
 
     def __upload_files(self):
         """ Upload entries with GeoJSON data to the DB """
-        logging.debug("UPLOADING")
+
         for col in self._points_collections:
             supabase.upsert(col, 'point_geojson')
 
