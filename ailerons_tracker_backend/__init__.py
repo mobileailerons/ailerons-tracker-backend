@@ -37,6 +37,7 @@ def create_app(test_config=None):
     @app.post('/upload')
     def upload_file():
         """ Parse a CSV file and insert data in DB """
+        print("Hey")
 
         try:
             # A priori on aurait deux fichiers donc j'ai donné un nouveau nom à celui ci "

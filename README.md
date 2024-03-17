@@ -16,5 +16,6 @@ Installer les dépendences: $ pip install -r requirements.txt
 Demander les variables d'environnement .env pour les accès Supabase et les placer à la racine
 
 Démarrer le serveur depuis le dossier racine: $ flask run
+Pour démarrer le serveur en mode debug utiliser cette commande: $ flask --app ./ailerons_tracker_backend/ --debug run
 
 Mettre à jour requirements.txt après l'installation d'une nouvelle dépendence: $ pip freeze > requirements.txt
