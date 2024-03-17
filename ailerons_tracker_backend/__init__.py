@@ -37,20 +37,16 @@ def create_app(test_config=None):
     @app.post('/upload')
     def upload_file():
         """ Parse a CSV file and insert data in DB """
-        print("Hey")
 
         try:
             # A priori on aurait deux fichiers donc j'ai donné un nouveau nom à celui ci "
             file_name, file_path = csv_parser.prepare_csv(request)
             csv_id = supabase.create_csv_log(file_name)
 
-            # plus besoin de la table jointe si j'ai bien compris mais je n'y ai pas touché
-            df_list, new_individual_id_list = csv_parser.parse_csv(
+            df_list = csv_parser.parse_csv(
                 file_path, csv_id)
 
             supabase.batch_insert("record", df_list)
-            supabase.batch_insert("individual_record_id",
-                                  new_individual_id_list)
 
             os.remove(file_path)
 
@@ -70,7 +66,7 @@ def create_app(test_config=None):
 
         except InvalidFile as e:
             app.logger.error(e)
-            return e, 400
+            return e.message, 400
 
     @app.post('/news')
     def upload_article():
