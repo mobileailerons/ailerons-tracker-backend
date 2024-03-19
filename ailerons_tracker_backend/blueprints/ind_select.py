@@ -17,9 +17,10 @@ def show():
     htmx = HTMX(current_app)
     if htmx:
         try:
-
             inds = supabase.get_all("individual")
+
             # Render template returns raw HTML
             return render_template('ind_select.html', inds=inds)
+
         except TemplateNotFound:
             abort(404)
