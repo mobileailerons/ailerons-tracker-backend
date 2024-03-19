@@ -38,10 +38,12 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # Enable CORS because HTMX requests are sent as "OPTIONS" by modern browsers which causes CORS errors
+    # Enable CORS because HTMX requests are sent as "OPTIONS"
+    # by modern browsers which causes CORS errors
     CORS(app)
 
-    # Enable Jinja Partials, which allows us to render HTML fragments instead of pages, kinda like components in Vue or React.
+    # Enable Jinja Partials, which allows us to render HTML fragments instead of pages,
+    # kinda like components in Vue or React.
     jinja_partials.register_extensions(app)
 
     # Register a blueprint => blueprint routes are now active
@@ -52,6 +54,10 @@ def create_app(test_config=None):
         """ Parse a CSV file and insert data in DB """
 
         try:
+            # On récupère le nom/id de l'individu auquel correspondent les fichiers
+            associated_ind = request.form["ind-select"]
+            app.logger.warning(associated_ind)
+
             # A priori on aurait deux fichiers donc j'ai donné un nouveau nom à celui ci "
             file_name, file_path = csv_parser.prepare_csv(request)
             csv_id = supabase.create_csv_log(file_name)
