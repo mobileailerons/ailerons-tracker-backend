@@ -3,12 +3,15 @@
 __version__ = "0.6"
 
 import os
+import jinja_partials
 from flask import Flask, request
 import postgrest
+from flask_cors import CORS
 from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.models.individual_model import Individual, Context
 from ailerons_tracker_backend.csv_parser import csv_parser
 from ailerons_tracker_backend.geojson_generator.generator import Generator
+from ailerons_tracker_backend.blueprints.ind_select import ind_select
 from .upload_image import upload_image
 from .errors import CloudinaryError, GeneratorError, InvalidFile
 from .clients.supabase_client import supabase
@@ -17,6 +20,7 @@ from .clients.supabase_client import supabase
 def create_app(test_config=None):
     """ Create an instance of the app """
     app = Flask(__name__, instance_relative_config=True)
+
     app.config.from_mapping(
         SECRET_KEY='dev',
     )
@@ -33,6 +37,15 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
+
+    # Enable CORS because HTMX requests are sent as "OPTIONS" by modern browsers which causes CORS errors
+    CORS(app)
+
+    # Enable Jinja Partials, which allows us to render HTML fragments instead of pages, kinda like components in Vue or React.
+    jinja_partials.register_extensions(app)
+
+    # Register a blueprint => blueprint routes are now active
+    app.register_blueprint(ind_select, url_prefix="/htmx")
 
     @app.post('/upload')
     def upload_file():
@@ -100,7 +113,10 @@ def create_app(test_config=None):
 
                 image_urls.append(image_url)
 
-            ind_data = Individual(request.form, image_urls).upload()
+            ind_data = Individual(
+                request.form["indName"],
+                request.form["indSex"],
+                image_urls).upload()
             ind_id = ind_data.get('id')
 
             context_data = Context(ind_id, request.form).upload()
@@ -120,5 +136,8 @@ def create_app(test_config=None):
         except InvalidFile as e:
             app.logger.error(e.message)
             return e.message, 400
+
+    # Get a very useful log of all routes urls when running the server
+    app.logger.warning(app.url_map)
 
     return app
