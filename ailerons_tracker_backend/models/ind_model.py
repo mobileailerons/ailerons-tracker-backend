@@ -5,9 +5,9 @@ from ailerons_tracker_backend.clients.supabase_client import supabase
 class Individual:
     """ Model for an individual """
 
-    def __init__(self, form, image_urls: list[str]):
-        self.name: str = form['indName']
-        self.sex: str = form['indSex']
+    def __init__(self, name: str, sex: str, image_urls: list[str]):
+        self.name: str = name
+        self.sex: str = sex
         self.pictures = image_urls
 
     def upload(self):
