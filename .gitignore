@@ -8,3 +8,4 @@ ailerons_tracker_backend.egg-info/
 **/__pycache__/
 **/.pytest_cache/
 .devcontainer/
+uploaded_csv/*
