@@ -47,4 +47,7 @@ def create_app(test_config=None):
     # Get a very useful log of all routes urls when running the server
     app.logger.warning(app.url_map)
 
+    # Get a very useful log of all routes urls when running the server
+    app.logger.warning(app.url_map)
+
     return app
