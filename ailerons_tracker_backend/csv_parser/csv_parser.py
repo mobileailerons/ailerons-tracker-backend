@@ -9,12 +9,13 @@ from ailerons_tracker_backend.errors import InvalidFile, ParserError
 from ailerons_tracker_backend.models.record_model import Record
 
 def prepare_csv(request):
-    """ Parse POST request CSV file and make a local copy
+    """ Retrieve POST request CSV files and make a local copy
 
     Args:
         request (API request): Request data
     """
     try:
+        # Only gets one file for now; localization data
         file = request.files["locFile"]
         stem = Path(file.filename).stem
 

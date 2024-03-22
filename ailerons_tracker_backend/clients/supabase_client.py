@@ -37,7 +37,8 @@ class SupabaseClient:
         return res.data
 
     def upsert(self, obj: object, table: str):
-        """ Insert or update a row in table 'article' """
+        """ Insert or update a row in selected table """
+
         data = self._client.table(table).upsert(
             obj.__dict__).execute()
 
