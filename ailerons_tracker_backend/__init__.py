@@ -12,6 +12,7 @@ from ailerons_tracker_backend.models.individual_model import Individual, Context
 from ailerons_tracker_backend.csv_parser import csv_parser
 from ailerons_tracker_backend.geojson_generator.generator import Generator
 from ailerons_tracker_backend.blueprints.ind_select import ind_select
+from ailerons_tracker_backend.blueprints.home import home
 from .upload_image import upload_image
 from .errors import CloudinaryError, GeneratorError, InvalidFile
 from .clients.supabase_client import supabase
@@ -47,6 +48,7 @@ def create_app(test_config=None):
     jinja_partials.register_extensions(app)
 
     # Register a blueprint => blueprint routes are now active
+    app.register_blueprint(home, url_prefix="/portal")
     app.register_blueprint(ind_select, url_prefix="/htmx")
 
     @app.post('/upload')

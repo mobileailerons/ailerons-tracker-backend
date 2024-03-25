@@ -1,0 +1,34 @@
+<section id="csv-upload-section">
+  <h2>Envoyer des fichiers</h2>
+  <hr />
+
+  <form
+    id="csv-upload-form"
+    action="http://127.0.0.1:5000/upload"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    <div hx-trigger="load" hx-get="http://127.0.0.1:5000/htmx/load"></div>
+    <label for="locFile"
+      >Relevés de localisation
+      <input
+        type="file"
+        class="file"
+        id="locFile"
+        name="locFile"
+        accept=".csv"
+      />
+    </label>
+    <label for="dataFile"
+      >Relevés de profondeur
+      <input
+        type="file"
+        class="file"
+        id="sensorFile"
+        name="sensorFile"
+        accept=".csv"
+      />
+    </label>
+    <input type="submit" class="submit" />
+  </form>
+</section>

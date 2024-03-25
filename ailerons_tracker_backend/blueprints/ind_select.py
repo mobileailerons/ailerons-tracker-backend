@@ -20,7 +20,7 @@ def show():
             inds = supabase.get_all("individual")
 
             # Render template returns raw HTML
-            return render_template('ind_select.html', inds=inds)
+            return render_template('upload/partials/ind_select.html', inds=inds)
 
         except TemplateNotFound:
             abort(404)
