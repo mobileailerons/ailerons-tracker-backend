@@ -55,8 +55,8 @@ def create_app(test_config=None):
 
         try:
             # On récupère le nom/id de l'individu auquel correspondent les fichiers
-            associated_ind = request.form["ind-select"]
-            app.logger.warning(associated_ind)
+            associated_individual = request.form["ind-select"]
+            app.logger.warning(associated_individual)
 
             # A priori on aurait deux fichiers donc j'ai donné un nouveau nom à celui ci "
             file_name, file_path = csv_parser.prepare_csv(request)

@@ -1,5 +1,4 @@
 """ Transfrom database entries into geoJSON files """
-import logging
 import geojson
 from ailerons_tracker_backend.clients.supabase_client import supabase
 from ailerons_tracker_backend.errors import GeneratorLineError, GeneratorPointError
@@ -41,14 +40,14 @@ class GeneratorBase:
             GeneratorLineError: Error generating LineString Features
         """
 
-        for ind in self._individuals:
+        for individual in self._individuals:
             ind_records = supabase.get_match(
-                "individual_id", ind["id"], "record")
+                "individual_id", individual["id"], "record")
 
             ind_points = []
             try:
                 for record in ind_records:
-                    point_item = PointFeature(record, ind)
+                    point_item = PointFeature(record, individual)
                     ind_points.append(point_item)
 
             except Exception as e:
@@ -56,7 +55,7 @@ class GeneratorBase:
 
             if len(ind_records) > 1:
                 try:
-                    line_item = LineStringFeature(ind_records, ind)
+                    line_item = LineStringFeature(ind_records, individual)
                     self._lines.append(line_item)
 
                 except Exception as e:
