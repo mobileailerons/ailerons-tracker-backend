@@ -82,6 +82,7 @@ main {
     padding: 88px 4vw;
 }
 
+
 main > section {
     display: flex;
     flex-direction: column;
@@ -93,6 +94,7 @@ main > section {
     width: min(80vw, 75ch);
     margin: auto;
     box-shadow: 0 8px 16px var(--dark-grey);
+    transition: all 500ms ease-in-out;
 }
 
 h1,
@@ -235,7 +237,7 @@ fieldset.nested {
     padding: 0.5rem 0;
 }
 
-input.date, input.field, select, input.number, input.search, textarea, ::file-selector-button, input.submit {
+input.date, input.field, select, input.number, input.search, textarea, ::file-selector-button, input.submit, button {
     all: unset;
     cursor: pointer;
     font-size: 1rem;
@@ -270,8 +272,11 @@ textarea {
 }
 
 ::file-selector-button {
-    position: relative;
     margin: 4px 1rem 4px 4px;
+}
+
+::file-selector-button, button.upload, button.add-ind {
+    position: relative;
     border-color: var(--blue-hosta);
     background-color:var(--blue-hosta);
     color: white;
@@ -284,7 +289,7 @@ button, input.submit, ::file-selector-button {
     font-size: 1.2rem;
 }
 
-::file-selector-button:hover {
+::file-selector-button:hover, button.upload:hover, button.add-ind:hover {
     color: var(--blue-hosta);
     border-color: var(--blue-hosta);
     background-color:var(--egg-shell);
@@ -299,13 +304,30 @@ input.date:hover {
     border-color: var(--blue-hosta)
 }
 
-input.submit {
+button, input.submit {
     width: fit-content;
     height: fit-content;
+    color: white;}
+
+input.submit, button.toggle {
     align-self: flex-end;
-    color: white;
     border-color: var(--deep-saffron);
     background-color:var(--deep-saffron);
+}
+
+button.cancel {
+    border-color:#c1121f;
+    background-color:#c1121f;
+}
+
+button.cancel:hover {
+    background-color: var(--egg-shell);
+    color: #c1121f;
+    border-color:#c1121f; 
+}
+
+td > button {
+    font-size: 1rem;
 }
 
 button:hover, input.submit:hover {
@@ -333,6 +355,17 @@ div.col-wrapper {
     gap: 0.25rem;
 }
 
+.htmx-swapping {
+    opacity: 0;
+    transform: scaleY(0);
+    transition: all 300ms ease-out;
+}
+
+.htmx-added {
+    opacity: 0;
+    transform: scaleY(0)
+}
+
 hr {
     all: unset;
     height: 1px;
@@ -341,6 +374,54 @@ hr {
     margin-bottom: 2rem;
     
 }
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 1rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+
+tr {
+    background-color:#7374751d;
+    border-top: 1px solid #737475;
+}
+
+thead > tr {
+    border: none;
+}
+
+tfoot > tr {
+ background-color: #cacaca;
+}
+
+tr:nth-child(even) {
+    background-color: #FFFEFD;
+}
+
+
+tr.headers {
+    background-color: var(--cool-blue);
+    color: var(--egg-shell)
+}
+
+th, td {
+    text-align: center;
+}
+
+td {
+    padding: 0.5rem 1rem;
+}
+
+th {
+    font-size: 1.2rem;
+    font-family: Comfortaa, sans-serif;
+    padding: 1rem 1rem 0.5rem;
+}
+
 
 :target {
      scroll-margin-top: 4rem;
