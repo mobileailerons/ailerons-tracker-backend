@@ -4,8 +4,7 @@ from ailerons_tracker_backend.errors import ParserError
 from ailerons_tracker_backend.models.record_model import Record
 from ailerons_tracker_backend.models.record_field_model import LocalisationField
 from ailerons_tracker_backend.models.record_field_model import DepthField
-from ailerons_tracker_backend.models.file_model import File
-from ailerons_tracker_backend.utils.file_util import FileManager
+from ailerons_tracker_backend.utils.file_util import FileManager, FileFieldName, File
 
 class CsvParser:
     """Class that manage the parsing of the different csv"""
