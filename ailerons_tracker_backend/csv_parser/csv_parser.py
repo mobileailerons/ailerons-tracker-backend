@@ -1,11 +1,9 @@
 """ CSV file parser middleware """
-import os
-import pandas as pd
-
 from ailerons_tracker_backend.errors import ParserError
 from ailerons_tracker_backend.models.record_model import Record
 from ailerons_tracker_backend.models.record_field_model import RecordField
 from ailerons_tracker_backend.models.file_model import File
+from ailerons_tracker_backend.utils.file_util import FileManager
 
 class CsvParser:
     def __init__(self, loc_file, depth_file):
@@ -15,21 +13,13 @@ class CsvParser:
 
     def _parse_field_from_csv(self, file: File, field_name):
         try:
-            absolute_path = os.path.abspath(file.path)
-            file_df = pd.read_csv(
-                absolute_path,
-                index_col=None,
-                encoding='ISO-8859-1',
-                engine='python',
-                on_bad_lines='error',
-                sep=';')
-
-            df_list = []
+            file_df = FileManager().get_dataframe(file.path)
+            data_list = []
 
             for row in file_df.itertuples(index=False):
                 new_field_record = RecordField(field_name, row._asdict())
                 new_field_record.file_db_id = file.db_id
-                df_list.append(new_field_record.__dict__)
+                data_list.append(new_field_record.__dict__)
 
             return df_list
         except Exception as e:
