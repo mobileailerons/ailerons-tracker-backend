@@ -1,6 +1,5 @@
 """ CSV file parser middleware """
 from operator import itemgetter
-from enum import Enum
 from ailerons_tracker_backend.errors import ParserError
 from ailerons_tracker_backend.models.record_model import Record
 from ailerons_tracker_backend.models.record_field_model import LocalisationField
@@ -8,27 +7,21 @@ from ailerons_tracker_backend.models.record_field_model import DepthField
 from ailerons_tracker_backend.models.file_model import File
 from ailerons_tracker_backend.utils.file_util import FileManager
 
-
-class FieldName(Enum):
-    LOCALISATION = "localisation"
-    DEPTH = "depth"
-
-
 class CsvParser:
     """Class that manage the parsing of the different csv"""
 
     def __init__(self, loc_file, depth_file):
         self.loc_df = self._parse_field_from_csv(
-            loc_file, FieldName.LOCALISATION)
-        self.depth_df = self._parse_field_from_csv(depth_file, FieldName.DEPTH)
+            loc_file)
+        self.depth_df = self._parse_field_from_csv(depth_file)
         self.record_df = self._merge_lists
 
-    def _parse_field_from_csv(self, file: File, field_name: FieldName):
+    def _parse_field_from_csv(self, file: File):
         try:
             file_df = FileManager().get_dataframe(file.path)
             data_list = []
 
-            field_class = LocalisationField if field_name == FieldName.LOCALISATION else DepthField
+            field_class = LocalisationField if file.field_name == FileFieldName.LOCALISATION else DepthField
 
             for row in file_df.itertuples(index=False):
                 new_field_record = field_class(row._asdict())

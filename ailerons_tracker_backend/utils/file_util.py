@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+from enum import Enum
 import pandas as pd
 from werkzeug.utils import secure_filename
 import postgrest
@@ -11,6 +12,12 @@ from ailerons_tracker_backend.models.file_model import File
 from ..clients.supabase_client import supabase
 
 
+class FileFieldName(Enum):
+    """Enum class that indicate the field that should be parsed in the file"""
+    LOCALISATION = "loc"
+    DEPTH = "depth"
+
+
 class FileManager:
     """File Manager"""
 
@@ -18,10 +25,11 @@ class FileManager:
         self.files = []
         self.request = request if request is not None else None
 
-    def prepare_csv_file(self, file_tag: str):
+    def prepare_csv_file(self, file_field_name: FileFieldName):
         """Get the file with the corresponding file tag in the request and move it in a folder.
         Create a file id in the database and return this id and the file path"""
         try:
+            file_tag = f"{file_field_name.value}_file"
             file = self.request.files[file_tag]
             stem = Path(file.filename).stem
 
@@ -29,19 +37,19 @@ class FileManager:
 
             file_path = os.path.join('./uploaded_csv', file_name)
             file.save(file_path)
-            file_db_id: int = supabase.create_csv_log(file_name)
+            file_db_id: int = supabase.create_csv_log(file_tag)
 
             file = File(file_path, file_db_id)
             self.files.append(file)
             return file
-        
+
         except postgrest.exceptions.APIError as e:
             print(e.message)
             raise e
 
         except Exception as e:
             raise InvalidFile(e) from e
-        
+
     def get_dataframe(self, file_path):
         """Return a dataframe from the file"""
         absolute_path = os.path.abspath(file_path)

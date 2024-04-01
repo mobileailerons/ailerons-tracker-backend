@@ -44,9 +44,9 @@ class SupabaseClient:
 
         return data.__dict__
 
-    def create_csv_log(self, file_name: str):
+    def create_csv_log(self, file_tag: str):
         """ Create and insert a CSV log in the DB and returns the generated ID """
-        csv_log = {'file_name': file_name}
+        csv_log = {file_tag: file_tag}
         data = self._client.table('csv').insert(csv_log).execute()
         content = data.__dict__.get('data')[0]
 

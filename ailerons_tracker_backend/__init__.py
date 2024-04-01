@@ -13,7 +13,7 @@ from ailerons_tracker_backend.models.individual_model import Individual, Context
 from ailerons_tracker_backend.csv_parser.csv_parser import CsvParser
 from ailerons_tracker_backend.geojson_generator.generator import Generator
 from ailerons_tracker_backend.blueprints.ind_select import ind_select
-from ailerons_tracker_backend.utils.file_util import FileManager
+from ailerons_tracker_backend.utils.file_util import FileManager, FileFieldName
 from .upload_image import upload_image
 from .errors import CloudinaryError, GeneratorError, InvalidFile
 from .clients.supabase_client import supabase
@@ -62,8 +62,8 @@ def create_app(test_config=None):
             app.logger.warning(associated_individual)
 
             file_manager = FileManager(request)
-            loc_file = file_manager.prepare_csv_file("locFile")
-            depth_file = file_manager.prepare_csv_file("depthFile")
+            loc_file = file_manager.prepare_csv_file(FileFieldName.LOCALISATION)
+            depth_file = file_manager.prepare_csv_file(FileFieldName.DEPTH)
 
             csv_parser = CsvParser(loc_file=loc_file, depth_file=depth_file)
             # supabase.batch_insert("record", csv_parser.record_df)
