@@ -13,14 +13,15 @@ from ..clients.supabase_client import supabase
 class FileManager:
     """File Manager"""
 
-    def __init__(self):
+    def __init__(self, request=None):
         self.files = []
+        self.request = request if request is not None else None
 
-    def prepare_csv_file(self, request, file_tag: str):
+    def prepare_csv_file(self, file_tag: str):
         """Get the file with the corresponding file tag in the request and move it in a folder.
         Create a file id in the database and return this id and the file path"""
         try:
-            file = request.files[file_tag]
+            file = self.request.files[file_tag]
             stem = Path(file.filename).stem
 
             file_name = secure_filename(stem)

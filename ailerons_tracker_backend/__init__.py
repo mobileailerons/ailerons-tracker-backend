@@ -9,7 +9,7 @@ import postgrest
 from flask_cors import CORS
 from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.models.individual_model import Individual, Context
-from ailerons_tracker_backend.csv_parser import CsvParser
+from ailerons_tracker_backend.csv_parser.csv_parser import CsvParser
 from ailerons_tracker_backend.geojson_generator.generator import Generator
 from ailerons_tracker_backend.blueprints.ind_select import ind_select
 from ailerons_tracker_backend.utils.file_util import FileManager
@@ -59,13 +59,12 @@ def create_app(test_config=None):
             associated_individual = request.form["ind-select"]
             app.logger.warning(associated_individual)
 
-            file_manager = FileManager()
-            loc_file = file_manager.prepare_csv_file(request, "locFile")
-            depth_file = file_manager.prepare_csv_file(request, "depthFile")
-            csv_parser = CsvParser(loc_file = loc_file, depth_file = depth_file)
-            
+            file_manager = FileManager(request)
+            loc_file = file_manager.prepare_csv_file("locFile")
+            depth_file = file_manager.prepare_csv_file("depthFile")
 
-            supabase.batch_insert("record", df_list)
+            csv_parser = CsvParser(loc_file=loc_file, depth_file=depth_file)
+            supabase.batch_insert("record", csv_parser.record_df)
 
             file_manager.drop_all()
 

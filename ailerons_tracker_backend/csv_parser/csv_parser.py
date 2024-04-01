@@ -6,6 +6,7 @@ from ailerons_tracker_backend.models.file_model import File
 from ailerons_tracker_backend.utils.file_util import FileManager
 
 class CsvParser:
+    """Class that manage the parsing of the different csv"""
     def __init__(self, loc_file, depth_file):
         self.loc_df = self._parse_field_from_csv(loc_file, "localisation")
         self.depth_df = self._parse_field_from_csv(depth_file, "profondeur")
@@ -21,6 +22,6 @@ class CsvParser:
                 new_field_record.file_db_id = file.db_id
                 data_list.append(new_field_record.__dict__)
 
-            return df_list
+            return data_list
         except Exception as e:
             raise ParserError() from e
