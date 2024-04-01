@@ -275,7 +275,7 @@ textarea {
     margin: 4px 1rem 4px 4px;
 }
 
-::file-selector-button, button.upload, button.add-ind {
+::file-selector-button, button {
     position: relative;
     border-color: var(--blue-hosta);
     background-color:var(--blue-hosta);
@@ -289,7 +289,17 @@ button, input.submit, ::file-selector-button {
     font-size: 1.2rem;
 }
 
-::file-selector-button:hover, button.upload:hover, button.add-ind:hover {
+button, input.submit {
+    width: fit-content;
+    height: fit-content;
+    color: white;
+}
+
+td > button {
+    font-size: 1rem;
+}
+
+::file-selector-button:hover, button:hover {
     color: var(--blue-hosta);
     border-color: var(--blue-hosta);
     background-color:var(--egg-shell);
@@ -303,11 +313,6 @@ input.date {
 input.date:hover {
     border-color: var(--blue-hosta)
 }
-
-button, input.submit {
-    width: fit-content;
-    height: fit-content;
-    color: white;}
 
 input.submit, button.toggle {
     align-self: flex-end;
@@ -326,9 +331,6 @@ button.cancel:hover {
     border-color:#c1121f; 
 }
 
-td > button {
-    font-size: 1rem;
-}
 
 button:hover, input.submit:hover {
     transform: translateY(-1px);
@@ -414,6 +416,11 @@ th, td {
 
 td {
     padding: 0.5rem 1rem;
+    white-space: nowrap;
+}
+
+#dashboard {
+    width: fit-content;
 }
 
 th {

@@ -1,0 +1,9 @@
+<table id="csv_table">
+    <thead>
+        {{ render_partial("dashboard/partials/csv_header.jinja") }}
+    </thead>
+    <tbody>
+        {% for csv in csvs: %}{{ render_partial('dashboard/partials/csv_row.jinja', csv=csv) }}{% endfor %}
+    </tbody>
+</table>
+{{ render_partial("dashboard/partials/ind_toggle_button.jinja") }}

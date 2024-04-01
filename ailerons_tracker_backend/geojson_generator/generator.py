@@ -11,7 +11,7 @@ class GeneratorBase:
 
     def __init__(self):
         # récupère la liste des individus depuis la BDD
-        self._individuals = supabase.get_all('individual')
+        self._individuals = supabase.get_all('individual_new')
         self._points: list[list[PointFeature]] = []
         self._lines: list[LineStringFeature] = []
         self._points_collections: list[geojson.FeatureCollection] = []

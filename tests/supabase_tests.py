@@ -53,4 +53,4 @@ class TestUpsertFeature():
         """ Test attempting insert in wrong table """
 
         with pytest.raises(postgrest.exceptions.APIError):
-            supabase.upsert(test_point, 'individual')
+            supabase.upsert(test_point, 'individual_new')

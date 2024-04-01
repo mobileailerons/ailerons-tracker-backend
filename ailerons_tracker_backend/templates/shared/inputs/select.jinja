@@ -1,0 +1,9 @@
+<label for="{{ input_id }}">
+  {{ label }}
+  <select id="{{ input_id }}" name="{{ input_id }}" value="unknown">
+    {% for opt in options %}
+      {{ render_partial('shared/inputs/option.jinja',
+            value = opt) }}
+    {% endfor %}
+  </select>
+</label>

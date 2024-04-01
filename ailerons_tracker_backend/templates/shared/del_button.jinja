@@ -1,0 +1,6 @@
+
+<button class="delete"
+        hx-get="/delete_csv?id={{ csv_id }}"
+        hx-trigger="click"
+        hx-target="{{ target }}"
+        hx-swap="outerHTML swap:300ms settle:50ms show:window:top">Annuler</button>

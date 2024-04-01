@@ -1,0 +1,15 @@
+<section id="csv-upload-section">
+  <h2>Envoyer des fichiers</h2>
+  <hr />
+  <form id="csv-upload-form"
+        action="{{ url_for("portal.csv_upload.upload_file") }}?id={{ id }}"
+        method="post"
+        enctype="multipart/form-data">
+    {{ render_partial('shared/inputs/file.jinja', input_id='locFile', label='Relevés de localisation', accept='.csv') }}
+    {{ render_partial('shared/inputs/file.jinja', input_id='depthFile' , label='Relevés de profondeur',accept='.csv') }}
+    <div class="row-wrapper padded">
+      {{ render_partial('shared/cancel_button.jinja', action='/portal/dashboard', target='#csv-upload-section') }}
+      <input type="submit" class="submit" />
+    </div>
+  </form>
+</section>

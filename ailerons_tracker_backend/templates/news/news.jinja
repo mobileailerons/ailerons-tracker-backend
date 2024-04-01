@@ -1,0 +1,11 @@
+<section id="news-post-section">
+  <h2>Publier une actualité</h2>
+  <hr />
+  <form id="news-post-form" method="post" enctype="multipart/form-data">
+    {{ render_partial("shared/inputs/text.jinja", label="Titre du post", input_id="post-title-input", input_name="news_title") }}
+    {{ render_partial("shared/inputs/image_file.jinja", label="Image d'illustration", input_id="post-image-input", input_name="newsImage") }}
+    {{ render_partial("shared/inputs/textarea.jinja", label="Corps de texte", input_id="post-content-input", input_name="newsContent", placeholder="Rédigez votre post ici") }}
+    {{ render_partial("shared/inputs/datetime.jinja", label="Date de publication souhaitée", input_id="publication-date-input", input_name="newsDate") }}
+    <input type="submit" class="submit" />
+  </form>
+</section>

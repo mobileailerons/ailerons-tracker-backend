@@ -1,0 +1,10 @@
+<tr>
+    <td class="id">{{ csv.id }}</td>
+    <td class="text">
+        <a hx-get="/dl/loc?{{ csv.loc_file }}" hx-trigger="click">{{ csv.loc_file }}</a>
+    </td>
+    <td class="text">
+        <a hx-get="/dl/depth?{{ csv.depth_file }}" hx-trigger="click">{{ csv.depth_file }}</a>
+    </td>
+    <td class="actions"></td>
+</tr>

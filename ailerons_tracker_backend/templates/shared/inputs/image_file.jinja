@@ -1,0 +1,4 @@
+<label for="{{ input_id }}">
+  {{ label }}
+  <input type="file" class="file" id="{{ input_id }}" name="{{ input_id }}" accept=".png,.jpg" {% if multiple: %}{{ multiple }}{% endif %} />
+</label>

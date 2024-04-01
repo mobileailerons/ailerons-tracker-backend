@@ -1,0 +1,27 @@
+<tr>
+    <td class="icon">
+        <img src="{{ ind.icon }}" height="24px" width="24px" alt="Manta ray icon" />
+    </td>
+    <td class="id">{{ ind.id }}</td>
+    <td class="text">{{ ind.name }}</td>
+    <td class="text">{{ ind.sex }}</td>
+    <td class="desc">{{ ind.desc }}</td>
+    <td class="img">
+        {% if ind.pictures %}
+            <img src="{{ ind.pictures[0] }}"
+                 height="40px"
+                 width="40px"
+                 alt="Associated image file" />
+        {% else %}
+            Null
+        {% endif %}
+    </td>
+    <td class="action">
+        {{ render_partial('shared/edit_button.jinja', ind_id = ind.id) }}
+        <button class="upload"
+                hx-get="/portal/csv?id={{ ind.id }}"
+                hx-trigger="click"
+                hx-target="#dashboard"
+                hx-swap="outerHTML swap:300ms settle:50ms show:window:top">Upload</button>
+    </td>
+</tr>

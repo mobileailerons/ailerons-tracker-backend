@@ -5,34 +5,31 @@ from ailerons_tracker_backend.clients.supabase_client import supabase
 class Individual:
     """ Model for an individual """
 
-    def __init__(self, name: str, sex: str, image_urls: list[str]):
+    def __init__(self, name: str, sex: str, image_urls: list[str], description: str = ''):
         self.name: str = name
         self.sex: str = sex
         self.pictures = image_urls
+        self.common_name: str = 'Diable de mer méditerranéen'
+        self.binomial_name: str = 'Mobula mobular'
+        self.description: str = description
+        self.icon: str = 'https://www.flaticon.com/free-icon/manta-ray_2253552?term=manta+ray&page=1&position=9&origin=tag&related_id=2253552'
 
     def upload(self):
-        """ Insert the object as a new row in table 'individual' """
+        """ Insert the object as a new row in table 'individual_new' """
 
-        data = supabase.upsert(self, 'individual')
+        data = supabase.upsert(self, 'individual_new')
         return data
 
 
 class Context:
     """ Model for an individual's tagging context """
 
-    def __init__(self, ind_id, form):
-        self.date = form['date']
-        self.individual_id: int = ind_id
-        self.situation: str = form['situation']
-        self.size: int = form['indSize']
-        self.mature: bool = form['mature']
-        self.feeding: bool = form['feeding']
-        self.reproduction: bool = form['reproduction']
-        self.gestation: bool = form['gestation']
-        self.jumping: bool = form['jumping']
-        self.injured: bool = form['injured']
-        self.sick: bool = form['sick']
-        self.parasites: bool = form['parasites']
+    def __init__(self, individual_id: int, date: str, situation: str, size: int, behavior: str):
+        self.date = date
+        self.individual_id: int = individual_id
+        self.situation: str = situation
+        self.size: int = size
+        self.behavior: str = behavior
 
     def upload(self):
         """ Insert the object as a new row in table 'context' """

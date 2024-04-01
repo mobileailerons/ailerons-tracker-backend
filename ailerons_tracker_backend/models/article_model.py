@@ -14,7 +14,7 @@ class Article:
         self.publication_date = form["newsDate"]
 
     def upload(self):
-        """ Insert the object as a new row in table 'individual' """
+        """ Insert the object as a new row in table 'individual_new' """
 
         data = supabase.upsert(self, 'article')
         return data

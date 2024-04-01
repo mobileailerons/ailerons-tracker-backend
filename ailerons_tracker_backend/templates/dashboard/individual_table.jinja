@@ -1,0 +1,20 @@
+<table id="individual_table">
+    <thead>
+        {{ render_partial("dashboard/partials/ind_header.jinja") }}
+    </thead>
+    <tbody>
+        {% for ind in inds: %}{{ render_partial("dashboard/partials/ind_row.jinja", ind=ind) }}{% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{{ render_partial("shared/add_ind_button.jinja") }}</td>
+        </tr>
+    </tfoot>
+</table>
+{{ render_partial("dashboard/partials/csv_toggle_button.jinja") }}
