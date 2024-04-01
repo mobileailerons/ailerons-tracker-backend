@@ -4,6 +4,7 @@ __version__ = "0.6"
 
 import os
 import jinja_partials
+import sys
 from flask import Flask, request
 import postgrest
 from flask_cors import CORS
@@ -66,7 +67,9 @@ def create_app(test_config=None):
             depth_file = file_manager.prepare_csv_file(FileFieldName.DEPTH)
 
             csv_parser = CsvParser(loc_file=loc_file, depth_file=depth_file)
-            # supabase.batch_insert("record", csv_parser.record_df)
+            print("HEY", file=sys.stdout)
+            print(f"{csv_parser.record_list}", file=sys.stdout)
+            supabase.batch_insert("record", csv_parser.record_list)
 
             file_manager.drop_all()
 

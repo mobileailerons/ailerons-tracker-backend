@@ -1,10 +1,11 @@
 """ CSV file parser middleware """
 from operator import itemgetter
+import sys
 from ailerons_tracker_backend.errors import ParserError
 from ailerons_tracker_backend.models.record_model import Record
-from ailerons_tracker_backend.models.record_field_model import LocalisationField
-from ailerons_tracker_backend.models.record_field_model import DepthField
+from ailerons_tracker_backend.models.record_field_model import LocalisationField, DepthField
 from ailerons_tracker_backend.utils.file_util import FileManager, FileFieldName, File
+
 
 class CsvParser:
     """Class that manage the parsing of the different csv"""
@@ -13,7 +14,7 @@ class CsvParser:
         self.loc_df = self._parse_field_from_csv(
             loc_file)
         self.depth_df = self._parse_field_from_csv(depth_file)
-        self.record_df = self._merge_lists
+        self.record_list = self._merge_lists
 
     def _parse_field_from_csv(self, file: File):
         try:
@@ -23,7 +24,7 @@ class CsvParser:
             field_class = LocalisationField if file.field_name == FileFieldName.LOCALISATION else DepthField
 
             for row in file_df.itertuples(index=False):
-                new_field_record = field_class(row._asdict())
+                new_field_record = field_class(row._asdict(), file.db_id)
                 new_field_record.file_db_id = file.db_id
                 data_list.append(new_field_record.__dict__)
 
@@ -43,9 +44,7 @@ class CsvParser:
         while i <= len(loc_list) and j <= len(depth_list):
             if loc_list[i].record_timestamp == depth_list[j].record_timestamp:
                 merged_list.append(
-                    Record(localisation_field_record=loc_list[i], depth_field_record=depth_list[j]))
-                print("MERGED")
-                print(Record(localisation_field_record=loc_list[i], depth_field_record=depth_list[j]).__dict__)
+                    Record(localisation_field_record=loc_list[i], depth_field_record=depth_list[j]).to_dict())
                 i += 1
                 j += 1
             else:

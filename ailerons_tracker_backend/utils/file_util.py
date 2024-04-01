@@ -10,6 +10,13 @@ import postgrest
 from ailerons_tracker_backend.errors import InvalidFile
 from ..clients.supabase_client import supabase
 
+
+class FileFieldName(Enum):
+    """Enum class that indicate the field that should be parsed in the file"""
+    LOCALISATION = "loc"
+    DEPTH = "depth"
+
+
 class File:
     """ Model for a CSV file. """
 
@@ -17,12 +24,6 @@ class File:
         self.path = file_path
         self.db_id = file_db_id
         self.field_name = file_field_name
-
-
-class FileFieldName(Enum):
-    """Enum class that indicate the field that should be parsed in the file"""
-    LOCALISATION = "loc"
-    DEPTH = "depth"
 
 
 class FileManager:
@@ -44,9 +45,9 @@ class FileManager:
 
             file_path = os.path.join('./uploaded_csv', file_name)
             file.save(file_path)
-            file_db_id: int = supabase.create_csv_log(file_tag)
+            # file_db_id: int = supabase.create_csv_log(file_tag)
 
-            file = File(file_path, file_db_id, file_field_name)
+            file = File(file_path, 1, file_field_name)
             self.files.append(file)
             return file
 
