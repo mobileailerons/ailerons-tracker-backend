@@ -11,8 +11,9 @@ class Record:
 
         return datetime.strptime(excel_date_string, "%d/%m/%Y %H:%M").isoformat()
 
-    def __init__(self, row):
-        self.latitude = row['latitude'].replace(',', '.')
-        self.longitude = row['longitude'].replace(',', '.')
-        self.individual_id = row['individual_id']
-        self.record_timestamp = self.date_to_iso(row['record_timestamp'])
+    def __init__(self, localisation_field_record, depth_field_record):
+        self.latitude = localisation_field_record['latitude']
+        self.longitude = localisation_field_record['longitude']
+        self.depth = depth_field_record['depth']
+        self.record_id = localisation_field_record['db_id']
+        self.record_timestamp = localisation_field_record['record_timestamp']

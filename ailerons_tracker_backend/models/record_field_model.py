@@ -11,7 +11,18 @@ class RecordField:
 
         return datetime.strptime(excel_date_string, "%d/%m/%Y %H:%M").isoformat()
 
-    def __init__(self, field_name: str, row):
-        self.field_name = field_name
-        self.field_value = row[field_name]
+    def __init__(self, row):
         self.record_timestamp = self.date_to_iso(row['record_timestamp'])
+
+class DepthField(RecordField):
+    """DepthField extends RecordField and contain depth data"""
+    def __init__(self, row):
+        super().__init__(row)
+        self.depth = row['depth']
+
+class LocalisationField(RecordField):
+    """LocalisationField extends RecordField and contain localisation data"""
+    def __init__(self, row):
+        super().__init__(row)
+        self.longitude = row['longitude'].replace(',', '.')
+        self.latitude = row['latitude'].replace(',', '.')

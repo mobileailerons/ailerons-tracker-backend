@@ -1,4 +1,5 @@
 """ CSV file parser middleware """
+from operator import itemgetter
 from ailerons_tracker_backend.errors import ParserError
 from ailerons_tracker_backend.models.record_model import Record
 from ailerons_tracker_backend.models.record_field_model import RecordField
@@ -25,3 +26,17 @@ class CsvParser:
             return data_list
         except Exception as e:
             raise ParserError() from e
+    
+    def _merge_lists(self):
+        loc_list = sorted(self.loc_df, key=itemgetter('record_timestamp'))
+        depth_list = sorted(self.depth_df, key=itemgetter('record_timestamp'))
+
+        merged_list = []
+
+        while i < len(loc_list) and j < len(depth_list):
+            if loc_list[i].record_timestamp == depth_list[j].record_timestamp:
+                merged_list.append()
+                i += 1
+            else:
+                merged_list.append(depth_list[j])
+                j += 1
