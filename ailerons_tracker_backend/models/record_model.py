@@ -2,7 +2,6 @@
 
 from datetime import datetime
 
-
 class Record:
     """ Model for a GPS data record. """
 
