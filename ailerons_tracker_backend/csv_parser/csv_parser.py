@@ -30,8 +30,10 @@ class CsvParser:
         except Exception as e:
             raise InvalidFile(e) from e
 
+    def __parse_file_from_file(file_path, file_db_id, field_name):
+        
 
-def parse_csv(path, csv_id: str, field_to_parse: str):
+def parse_csv(path, csv_id: str):
     """ Parse a CSV file and return a list of entries 
         and a list of matching individual_ids """
     try:
