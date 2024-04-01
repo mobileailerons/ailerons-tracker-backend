@@ -63,11 +63,11 @@ def create_app(test_config=None):
             loc_file = file_manager.prepare_csv_file(request, "locFile")
             depth_file = file_manager.prepare_csv_file(request, "depthFile")
             csv_parser = CsvParser(loc_file = loc_file, depth_file = depth_file)
-            
+
 
             supabase.batch_insert("record", df_list)
 
-            os.remove(file_path)
+            file_manager.drop_all
 
             generator = Generator()
             generator.generate()

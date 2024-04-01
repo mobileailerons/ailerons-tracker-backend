@@ -29,3 +29,8 @@ class FileManager:
         
         except Exception as e:
             raise InvalidFile(e) from e
+        
+    def drop_all(self):
+        """Delete all the files contained in the file manager"""
+        for file in enumerate(self.files):
+            os.remove(file.path)
