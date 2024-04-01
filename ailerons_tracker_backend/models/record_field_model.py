@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-class Record:
+class RecordField:
     """ Model for a field of data record. """
 
     @staticmethod
@@ -11,7 +11,7 @@ class Record:
 
         return datetime.strptime(excel_date_string, "%d/%m/%Y %H:%M").isoformat()
 
-    def __init__(self, field_name: str, field_value, field_timestamp):
+    def __init__(self, field_name: str, row):
         self.field_name = field_name
-        self.field_value = field_value
-        self.field_timestamp = self.date_to_iso(field_timestamp)
+        self.field_value = row[field_name]
+        self.record_timestamp = self.date_to_iso(row['record_timestamp'])
