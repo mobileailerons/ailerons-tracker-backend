@@ -9,9 +9,10 @@ import postgrest
 from flask_cors import CORS
 from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.models.individual_model import Individual, Context
-from ailerons_tracker_backend.csv_parser import csv_parser
+from ailerons_tracker_backend.csv_parser import CsvParser
 from ailerons_tracker_backend.geojson_generator.generator import Generator
 from ailerons_tracker_backend.blueprints.ind_select import ind_select
+from ailerons_tracker_backend.utils.file_util import FileManager
 from .upload_image import upload_image
 from .errors import CloudinaryError, GeneratorError, InvalidFile
 from .clients.supabase_client import supabase
@@ -58,11 +59,11 @@ def create_app(test_config=None):
             associated_individual = request.form["ind-select"]
             app.logger.warning(associated_individual)
 
-            # A priori on aurait deux fichiers donc j'ai donné un nouveau nom à celui ci "
-            file_name, file_path = csv_parser.prepare_csv(request)
-
-            df_list = csv_parser.parse_csv(
-                file_path, csv_id)
+            file_manager = FileManager()
+            loc_file = file_manager.prepare_csv_file(request, "locFile")
+            depth_file = file_manager.prepare_csv_file(request, "depthFile")
+            csv_parser = CsvParser(loc_file = loc_file, depth_file = depth_file)
+            
 
             supabase.batch_insert("record", df_list)
 
