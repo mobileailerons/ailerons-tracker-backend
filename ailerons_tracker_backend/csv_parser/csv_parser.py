@@ -36,6 +36,7 @@ class CsvParser:
                 data_list.append(new_field_record.__dict__)
 
             return data_list
+
         except Exception as e:
             raise ParserError() from e
 
@@ -51,6 +52,7 @@ class CsvParser:
             if loc_list[i].record_timestamp == depth_list[j].record_timestamp:
                 merged_list.append(
                     Record(localisation_field_record=loc_list[i], depth_field_record=depth_list[j]))
+                print("MERGED")
                 print(Record(localisation_field_record=loc_list[i], depth_field_record=depth_list[j]).__dict__)
                 i += 1
                 j += 1

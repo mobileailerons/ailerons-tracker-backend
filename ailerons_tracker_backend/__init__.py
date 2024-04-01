@@ -58,8 +58,8 @@ def create_app(test_config=None):
 
         try:
             # On récupère le nom/id de l'individu auquel correspondent les fichiers
-            # associated_individual = request.form["ind-select"]
-            # app.logger.warning(associated_individual)
+            associated_individual = request.form["ind-select"]
+            app.logger.warning(associated_individual)
 
             file_manager = FileManager(request)
             loc_file = file_manager.prepare_csv_file("locFile")
@@ -70,8 +70,8 @@ def create_app(test_config=None):
 
             file_manager.drop_all()
 
-            generator = Generator()
-            generator.generate()
+            # generator = Generator()
+            # generator.generate()
 
             return "CSVs uploaded and geoJSONs generated", 200
 
@@ -85,7 +85,7 @@ def create_app(test_config=None):
             return e.message, 500
 
         except InvalidFile as e:
-            app.logger.error(e)
+            app.logger.error(e.message)
             return e.message, 400
 
     @app.post('/news')

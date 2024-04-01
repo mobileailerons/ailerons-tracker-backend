@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import pandas as pd
 from werkzeug.utils import secure_filename
+import postgrest
 
 from ailerons_tracker_backend.errors import InvalidFile
 from ailerons_tracker_backend.models.file_model import File
@@ -28,11 +29,15 @@ class FileManager:
 
             file_path = os.path.join('./uploaded_csv', file_name)
             file.save(file_path)
-            # file_db_id: int = supabase.create_csv_log(file_name)
+            file_db_id: int = supabase.create_csv_log(file_name)
 
-            file = File(file_path, 1)
+            file = File(file_path, file_db_id)
             self.files.append(file)
             return file
+        
+        except postgrest.exceptions.APIError as e:
+            print(e.message)
+            raise e
 
         except Exception as e:
             raise InvalidFile(e) from e
@@ -51,5 +56,5 @@ class FileManager:
 
     def drop_all(self):
         """Delete all the files contained in the file manager"""
-        for file in enumerate(self.files):
+        for file in self.files:
             os.remove(file.path)
