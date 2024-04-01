@@ -28,9 +28,9 @@ class FileManager:
 
             file_path = os.path.join('./uploaded_csv', file_name)
             file.save(file_path)
-            file_db_id: int = supabase.create_csv_log(file_name)
+            # file_db_id: int = supabase.create_csv_log(file_name)
 
-            file = File(file_path, file_db_id)
+            file = File(file_path, 1)
             self.files.append(file)
             return file
 

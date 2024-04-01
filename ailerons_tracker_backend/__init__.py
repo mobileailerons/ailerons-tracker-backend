@@ -7,6 +7,7 @@ import jinja_partials
 from flask import Flask, request
 import postgrest
 from flask_cors import CORS
+import logging
 from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.models.individual_model import Individual, Context
 from ailerons_tracker_backend.csv_parser.csv_parser import CsvParser
@@ -49,21 +50,23 @@ def create_app(test_config=None):
     # Register a blueprint => blueprint routes are now active
     app.register_blueprint(ind_select, url_prefix="/htmx")
 
+    logging.basicConfig(filename='flask.log', level=logging.DEBUG)
+
     @app.post('/upload')
     def upload_file():
         """ Parse a CSV file and insert data in DB """
 
         try:
             # On récupère le nom/id de l'individu auquel correspondent les fichiers
-            associated_individual = request.form["ind-select"]
-            app.logger.warning(associated_individual)
+            # associated_individual = request.form["ind-select"]
+            # app.logger.warning(associated_individual)
 
             file_manager = FileManager(request)
             loc_file = file_manager.prepare_csv_file("locFile")
             depth_file = file_manager.prepare_csv_file("depthFile")
 
             csv_parser = CsvParser(loc_file=loc_file, depth_file=depth_file)
-            supabase.batch_insert("record", csv_parser.record_df)
+            # supabase.batch_insert("record", csv_parser.record_df)
 
             file_manager.drop_all()
 
