@@ -47,7 +47,7 @@ class FileManager:
             file.save(file_path)
             # file_db_id: int = supabase.create_csv_log(file_tag)
 
-            file = File(file_path, 1, file_field_name)
+            file = File(file_path, 23, file_field_name)
             self.files.append(file)
             return file
 

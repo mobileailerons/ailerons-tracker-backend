@@ -68,7 +68,6 @@ def create_app(test_config=None):
 
             csv_parser = CsvParser(loc_file=loc_file, depth_file=depth_file)
             print("HEY", file=sys.stdout)
-            print(f"{csv_parser.record_list}", file=sys.stdout)
             supabase.batch_insert("record", csv_parser.record_list)
 
             file_manager.drop_all()

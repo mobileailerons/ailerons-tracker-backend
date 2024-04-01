@@ -10,7 +10,7 @@ class Record:
         self.latitude = localisation_field_record.latitude
         self.longitude = localisation_field_record.longitude
         self.depth = depth_field_record.depth
-        self.record_id = localisation_field_record.csv_id
+        self.csv_id = localisation_field_record.csv_id
         self.record_timestamp = localisation_field_record.record_timestamp
 
     def to_dict(self):
@@ -19,6 +19,6 @@ class Record:
             "latitude": self.latitude,
             "longitude": self.longitude,
             "depth": self.depth,
-            "record_id": self.record_id,
+            "csv_id": self.csv_id,
             "record_timestamp": self.record_timestamp
         }
