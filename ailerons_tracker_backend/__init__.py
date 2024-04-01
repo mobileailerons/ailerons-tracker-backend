@@ -3,10 +3,8 @@
 __version__ = "0.6"
 
 import os
-import jinja_partials
 from flask import Flask, request
 import postgrest
-from flask_cors import CORS
 from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.models.individual_model import Individual, Context
 from ailerons_tracker_backend.csv_parser.csv_parser import CsvParser
@@ -16,7 +14,6 @@ from ailerons_tracker_backend.utils.file_util import FileManager
 from .upload_image import upload_image
 from .errors import CloudinaryError, GeneratorError, InvalidFile
 from .clients.supabase_client import supabase
-
 
 def create_app(test_config=None):
     """ Create an instance of the app """
@@ -41,11 +38,9 @@ def create_app(test_config=None):
 
     # Enable CORS because HTMX requests are sent as "OPTIONS"
     # by modern browsers which causes CORS errors
-    CORS(app)
 
     # Enable Jinja Partials, which allows us to render HTML fragments instead of pages,
     # kinda like components in Vue or React.
-    jinja_partials.register_extensions(app)
 
     # Register a blueprint => blueprint routes are now active
     app.register_blueprint(ind_select, url_prefix="/htmx")

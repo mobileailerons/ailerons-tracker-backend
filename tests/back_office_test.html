@@ -10,17 +10,26 @@
 
     <!-- <form action="https://tracker-projet-ailerons.koyeb.app/upload" method="post" enctype="multipart/form-data"> -->
     <form action="http://localhost:5000/upload" method="post" enctype="multipart/form-data">
-        <label for="csvFile">Choose a CSV file:</label>
-        <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
-        <input type="hidden" id="originalFileName" name="originalFileName">
+        <label for="locFile">Choose CSV file loc:</label>
+        <input type="file" id="locFile" name="locFile" accept=".csv" required>
+        <br>
+        <label for="depthFile">Choose CSV file depth:</label>
+        <input type="file" id="depthFile" name="depthFile" accept=".csv" required>
+        <input type="hidden" id="originalFileName1" name="originalFileName1">
+        <input type="hidden" id="originalFileName2" name="originalFileName2">
         <br>
         <button type="submit">Upload</button>
     </form>
 
     <script>
-        document.getElementById('csvFile').addEventListener('change', function(event) {
+        document.getElementById('locFile').addEventListener('change', function(event) {
             console.log(event.target.files[0].name);
-            document.getElementById('originalFileName').value = event.target.files[0].name;
+            document.getElementById('originalFileName1').value = event.target.files[0].name;
+        });
+
+        document.getElementById('depthFile').addEventListener('change', function(event) {
+            console.log(event.target.files[0].name);
+            document.getElementById('originalFileName2').value = event.target.files[0].name;
         });
     </script>
 </body>
