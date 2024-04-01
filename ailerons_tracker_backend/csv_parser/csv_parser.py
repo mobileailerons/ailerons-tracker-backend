@@ -1,6 +1,4 @@
 """ CSV file parser middleware """
-from operator import itemgetter
-import sys
 from ailerons_tracker_backend.errors import ParserError
 from ailerons_tracker_backend.models.record_model import Record
 from ailerons_tracker_backend.models.record_field_model import LocalisationField, DepthField
