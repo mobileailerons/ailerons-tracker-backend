@@ -75,7 +75,8 @@ def edit():
         current_app.logger.warning(individual)
         context = supabase.get_match(
             "individual_id", individual_id, "context")[0]
-        return render_partial('individual_infos/individual_infos.jinja', ind=individual, context=context, edit=True)
+        current_app.logger.warning(context)
+        return render_partial('individual_infos/individual_infos_edit.jinja', ind=individual, context=context)
 
     except TemplateNotFound as e:
         current_app.logger.warning(e)

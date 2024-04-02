@@ -3,5 +3,6 @@
     <input type="checkbox"
            class="check"
            id="{{ input_id }}"
-           name="{{ input_id }}" />
+           name="{{ input_id }}"
+           {% if val: %}value="{{ val }}"{% endif %} />
 </label>
