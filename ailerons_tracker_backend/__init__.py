@@ -3,6 +3,7 @@
 __version__ = "0.6"
 
 import os
+import uuid
 import jinja_partials
 from flask import Flask, request
 import postgrest
@@ -58,13 +59,15 @@ def create_app(test_config=None):
             associated_individual = request.form["ind-select"]
             app.logger.warning(associated_individual)
 
-            file_manager = FileManager(request)
+            csv_id = uuid.uuid4()
+
+            file_manager = FileManager(request, csv_id)
             loc_file = file_manager.prepare_csv_file(FileFieldName.LOCALISATION)
             depth_file = file_manager.prepare_csv_file(FileFieldName.DEPTH)
 
             csv_parser = CsvParser(loc_file=loc_file, depth_file=depth_file)
 
-            supabase.create_csv_log(loc_file.field_name, depth_file.field_name)
+            supabase.create_csv_log(csv_id, loc_file.field_name, depth_file.field_name)
             supabase.batch_insert("record", csv_parser.record_list)
 
             file_manager.drop_all()

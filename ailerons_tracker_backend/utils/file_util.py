@@ -19,17 +19,20 @@ class FileFieldName(Enum):
 class File:
     """ Model for a CSV file. """
 
-    def __init__(self, file_path, file_db_id, file_field_name):
+    def __init__(self, file_path, file_field_name, csv_uuid):
         self.path = file_path
         self.field_name = file_field_name
+        self.csv_uuid = csv_uuid
 
 
 class FileManager:
     """File Manager"""
 
-    def __init__(self, request=None):
+    def __init__(self, request, csv_uuid: str):
         self.files = []
-        self.request = request if request is not None else None
+        self.request = request
+        self.csv_uuid = csv_uuid
+        
 
     def prepare_csv_file(self, file_field_name: FileFieldName):
         """Get the file with the corresponding file tag in the request and move it in a folder.
@@ -40,11 +43,10 @@ class FileManager:
             stem = Path(file.filename).stem
 
             file_name = secure_filename(stem)
-
             file_path = os.path.join('./uploaded_csv', file_name)
             file.save(file_path)
 
-            file = File(file_path, 23, file_field_name)
+            file = File(file_path, file_field_name, self.csv_uuid)
             self.files.append(file)
             return file
 
