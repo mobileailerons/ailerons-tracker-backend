@@ -8,7 +8,6 @@ from werkzeug.utils import secure_filename
 import postgrest
 
 from ailerons_tracker_backend.errors import InvalidFile
-from ..clients.supabase_client import supabase
 
 
 class FileFieldName(Enum):
@@ -22,7 +21,6 @@ class File:
 
     def __init__(self, file_path, file_db_id, file_field_name):
         self.path = file_path
-        self.db_id = file_db_id
         self.field_name = file_field_name
 
 
@@ -45,7 +43,6 @@ class FileManager:
 
             file_path = os.path.join('./uploaded_csv', file_name)
             file.save(file_path)
-            # file_db_id: int = supabase.create_csv_log(file_tag)
 
             file = File(file_path, 23, file_field_name)
             self.files.append(file)

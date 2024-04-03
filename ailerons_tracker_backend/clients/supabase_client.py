@@ -3,6 +3,7 @@
 import os
 from dotenv import load_dotenv
 from supabase import create_client, Client
+import uuid
 
 load_dotenv()
 
@@ -44,9 +45,12 @@ class SupabaseClient:
 
         return data.__dict__
 
-    def create_csv_log(self, file_tag: str):
+    def create_csv_log(self, uuid: str, loc_file_name: str, depth_file_name: str):
         """ Create and insert a CSV log in the DB and returns the generated ID """
-        csv_log = {file_tag: file_tag}
+        csv_id = uuid.uuid4()
+        csv_log = { 'uuid': uuid,
+                   'loc_file': loc_file_name,
+                    'depth_file': depth_file_name }
         data = self._client.table('csv').insert(csv_log).execute()
         content = data.__dict__.get('data')[0]
 

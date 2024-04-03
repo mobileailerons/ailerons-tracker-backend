@@ -63,6 +63,8 @@ def create_app(test_config=None):
             depth_file = file_manager.prepare_csv_file(FileFieldName.DEPTH)
 
             csv_parser = CsvParser(loc_file=loc_file, depth_file=depth_file)
+
+            supabase.create_csv_log(loc_file.field_name, depth_file.field_name)
             supabase.batch_insert("record", csv_parser.record_list)
 
             file_manager.drop_all()
