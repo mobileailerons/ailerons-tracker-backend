@@ -18,6 +18,7 @@ from .upload_image import upload_image
 from .errors import CloudinaryError, GeneratorError, InvalidFile
 from .clients.supabase_client import supabase
 
+
 def create_app(test_config=None):
     """ Create an instance of the app """
     app = Flask(__name__, instance_relative_config=True)
@@ -62,12 +63,12 @@ def create_app(test_config=None):
             csv_uuid = str(uuid.uuid4())
 
             file_manager = FileManager(request, csv_uuid)
-            loc_file = file_manager.prepare_csv_file(FileFieldName.LOCALISATION)
-            depth_file = file_manager.prepare_csv_file(FileFieldName.DEPTH)
 
-            csv_parser = CsvParser(loc_file=loc_file, depth_file=depth_file)
+            csv_parser = CsvParser(
+                loc_file=file_manager.loc_file, depth_file=file_manager.depth_file)
 
-            supabase.create_csv_log(csv_uuid, loc_file.field_name.value, depth_file.field_name.value)
+            supabase.create_csv_log(
+                csv_uuid, file_manager.loc_file.field_name, file_manager.depth_file.field_name.value)
             supabase.batch_insert("record", csv_parser.record_list)
 
             file_manager.drop_all()

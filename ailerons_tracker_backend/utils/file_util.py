@@ -19,22 +19,23 @@ class FileFieldName(Enum):
 class File:
     """ Model for a CSV file. """
 
-    def __init__(self, file_path, file_field_name, csv_uuid):
-        self.path = file_path
-        self.field_name = file_field_name
-        self.csv_uuid = csv_uuid
+    def __init__(self, file_path, file_field_name):
+        self.path: str = file_path
+        self.field_name: str = file_field_name
 
 
 class FileManager:
     """File Manager"""
 
-    def __init__(self, request=None, csv_uuid: str=None):
-        self.files = []
-        self.request = request if request is not None else None
-        self.csv_uuid = csv_uuid if csv_uuid is not None else None
+    def __init__(self, request, csv_uuid: str):
+        self.files_path: list[str] = []
+        self.request = request
+        self.csv_uuid = csv_uuid
+        self.loc_file: File = self._prepare_csv_file(FileFieldName.LOCALISATION)
+        self.depth_file: File = self._prepare_csv_file(FileFieldName.DEPTH)
         
 
-    def prepare_csv_file(self, file_field_name: FileFieldName):
+    def _prepare_csv_file(self, file_field_name: FileFieldName):
         """Get the file with the corresponding file tag in the request and move it in a folder.
         Create a file id in the database and return this id and the file path"""
         try:
@@ -46,8 +47,8 @@ class FileManager:
             file_path = os.path.join('./uploaded_csv', file_name)
             file.save(file_path)
 
-            file = File(file_path, file_field_name, self.csv_uuid)
-            self.files.append(file)
+            file = File(file_path, file_field_name.value)
+            self.files_path.append(file.field_name)
             return file
 
         except postgrest.exceptions.APIError as e:
@@ -71,5 +72,5 @@ class FileManager:
 
     def drop_all(self):
         """Delete all the files contained in the file manager"""
-        for file in self.files:
-            os.remove(file.path)
+        for file_path in self.files_path:
+            os.remove(file_path)
