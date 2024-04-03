@@ -45,10 +45,9 @@ class SupabaseClient:
 
         return data.__dict__
 
-    def create_csv_log(self, uuid: str, loc_file_name: str, depth_file_name: str):
+    def create_csv_log(self, loc_file_name: str, depth_file_name: str):
         """ Create and insert a CSV log in the DB and returns the generated ID """
-        csv_id = uuid.uuid4()
-        csv_log = { 'uuid': uuid,
+        csv_log = { 'uuid': uuid.uuid4(),
                    'loc_file': loc_file_name,
                     'depth_file': depth_file_name }
         data = self._client.table('csv').insert(csv_log).execute()
