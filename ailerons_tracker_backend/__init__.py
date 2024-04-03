@@ -59,15 +59,15 @@ def create_app(test_config=None):
             associated_individual = request.form["ind-select"]
             app.logger.warning(associated_individual)
 
-            csv_id = uuid.uuid4()
+            csv_uuid = str(uuid.uuid4())
 
-            file_manager = FileManager(request, csv_id)
+            file_manager = FileManager(request, csv_uuid)
             loc_file = file_manager.prepare_csv_file(FileFieldName.LOCALISATION)
             depth_file = file_manager.prepare_csv_file(FileFieldName.DEPTH)
 
             csv_parser = CsvParser(loc_file=loc_file, depth_file=depth_file)
 
-            supabase.create_csv_log(csv_id, loc_file.field_name, depth_file.field_name)
+            supabase.create_csv_log(csv_uuid, loc_file.field_name.value, depth_file.field_name.value)
             supabase.batch_insert("record", csv_parser.record_list)
 
             file_manager.drop_all()

@@ -51,8 +51,7 @@ class SupabaseClient:
                     'depth_file': depth_file_name }
         data = self._client.table('csv').insert(csv_log).execute()
         content = data.__dict__.get('data')[0]
-
-        return content.get("id")
+        
 
     def batch_insert(self, table: str, datalist: list):
         """ Batch insert new rows in table Record """

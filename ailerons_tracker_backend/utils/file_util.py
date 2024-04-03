@@ -28,10 +28,10 @@ class File:
 class FileManager:
     """File Manager"""
 
-    def __init__(self, request, csv_uuid: str):
+    def __init__(self, request=None, csv_uuid: str=None):
         self.files = []
-        self.request = request
-        self.csv_uuid = csv_uuid
+        self.request = request if request is not None else None
+        self.csv_uuid = csv_uuid if csv_uuid is not None else None
         
 
     def prepare_csv_file(self, file_field_name: FileFieldName):

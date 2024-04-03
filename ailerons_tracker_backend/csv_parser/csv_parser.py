@@ -22,8 +22,8 @@ class CsvParser:
             field_class = LocalisationField if file.field_name == FileFieldName.LOCALISATION else DepthField
 
             for row in file_df.itertuples(index=False):
-                new_field_record = field_class(row._asdict(), file.db_id)
-                new_field_record.file_db_id = file.db_id
+                new_field_record = field_class(row._asdict(), file.csv_uuid)
+                new_field_record.file_csv_uuid = file.csv_uuid
                 data_list.append(new_field_record)
 
             return data_list
