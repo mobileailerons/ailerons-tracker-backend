@@ -4,11 +4,9 @@ __version__ = "0.6"
 
 import os
 import jinja_partials
-import sys
 from flask import Flask, request
 import postgrest
 from flask_cors import CORS
-import logging
 from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.models.individual_model import Individual, Context
 from ailerons_tracker_backend.csv_parser.csv_parser import CsvParser
@@ -50,8 +48,6 @@ def create_app(test_config=None):
 
     # Register a blueprint => blueprint routes are now active
     app.register_blueprint(ind_select, url_prefix="/htmx")
-
-    logging.basicConfig(filename='flask.log', level=logging.DEBUG)
 
     @app.post('/upload')
     def upload_file():
