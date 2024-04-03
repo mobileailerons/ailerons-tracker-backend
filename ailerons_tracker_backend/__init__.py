@@ -64,11 +64,10 @@ def create_app(test_config=None):
 
             file_manager = FileManager(request, csv_uuid)
 
-            csv_parser = CsvParser(
-                loc_file=file_manager.loc_file, depth_file=file_manager.depth_file)
+            csv_parser = CsvParser(file_manager)
 
             supabase.create_csv_log(
-                csv_uuid, file_manager.loc_file.field_name, file_manager.depth_file.field_name.value)
+                csv_uuid, file_manager.loc_file.name, file_manager.depth_file.name)
             supabase.batch_insert("record", csv_parser.record_list)
 
             file_manager.drop_all()

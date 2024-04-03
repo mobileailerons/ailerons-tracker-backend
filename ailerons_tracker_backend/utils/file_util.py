@@ -12,16 +12,17 @@ from ailerons_tracker_backend.errors import InvalidFile
 
 class FileFieldName(Enum):
     """Enum class that indicate the field that should be parsed in the file"""
-    LOCALISATION = "loc"
-    DEPTH = "depth"
+    LOCALISATION = "loc_file"
+    DEPTH = "depth_file"
 
 
 class File:
     """ Model for a CSV file. """
 
-    def __init__(self, file_path, file_field_name):
-        self.path: str = file_path
-        self.field_name: str = file_field_name
+    def __init__(self, name, file_field_name, df):
+        self.name: str = name
+        self.field_name: FileFieldName = file_field_name
+        self.df = df
 
 
 class FileManager:
@@ -39,16 +40,16 @@ class FileManager:
         """Get the file with the corresponding file tag in the request and move it in a folder.
         Create a file id in the database and return this id and the file path"""
         try:
-            file_tag = f"{file_field_name.value}_file"
-            file = self.request.files[file_tag]
+            file = self.request.files[file_field_name.value]
             stem = Path(file.filename).stem
 
             file_name = secure_filename(stem)
             file_path = os.path.join('./uploaded_csv', file_name)
             file.save(file_path)
-
-            file = File(file_path, file_field_name.value)
-            self.files_path.append(file.field_name)
+            
+            file_df = self._get_dataframe(file_path)
+            file = File(file_name, file_field_name, file_df)
+            self.files_path.append(file_path)
             return file
 
         except postgrest.exceptions.APIError as e:
@@ -58,7 +59,7 @@ class FileManager:
         except Exception as e:
             raise InvalidFile(e) from e
 
-    def get_dataframe(self, file_path):
+    def _get_dataframe(self, file_path):
         """Return a dataframe from the file"""
         absolute_path = os.path.abspath(file_path)
         file_df = pd.read_csv(

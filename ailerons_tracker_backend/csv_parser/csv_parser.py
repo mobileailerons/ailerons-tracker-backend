@@ -8,22 +8,20 @@ from ailerons_tracker_backend.utils.file_util import FileManager, FileFieldName,
 class CsvParser:
     """Class that manage the parsing of the different csv"""
 
-    def __init__(self, loc_file, depth_file):
-        self.loc_df = self._parse_field_from_csv(
-            loc_file)
-        self.depth_df = self._parse_field_from_csv(depth_file)
+    def __init__(self, file_manager: FileManager):
+        self.csv_uuid = file_manager.csv_uuid
+        self.loc_df = self._parse_field_from_csv(file_manager.loc_file)
+        self.depth_df = self._parse_field_from_csv(file_manager.depth_file)
         self.record_list = self._merge_lists()
 
     def _parse_field_from_csv(self, file: File):
         try:
-            file_df = FileManager().get_dataframe(file.path)
-            data_list = []
+            data_list= []
 
             field_class = LocalisationField if file.field_name == FileFieldName.LOCALISATION else DepthField
 
-            for row in file_df.itertuples(index=False):
-                new_field_record = field_class(row._asdict(), file.csv_uuid)
-                new_field_record.file_csv_uuid = file.csv_uuid
+            for row in file.df.itertuples(index=False):
+                new_field_record = field_class(row._asdict(), self.csv_uuid)
                 data_list.append(new_field_record)
 
             return data_list
