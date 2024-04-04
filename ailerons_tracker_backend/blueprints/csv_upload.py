@@ -62,7 +62,7 @@ def show():
     """ Serve csv upload page """
     try:
         individual_id = request.args.get('id')
-        individual_data = supabase.get_match('id', individual_id, "individual")[0]
+        individual_data = supabase.get_match('id', individual_id, "individual_new")[0]
         # Render template returns raw HTML
         return render_partial('csv_upload/csv_upload.jinja', ind=individual_data)
 

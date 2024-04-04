@@ -385,7 +385,7 @@ div.col-wrapper {
 
 .htmx-added {
     opacity: 0;
-    transform: scaleY(0)
+    transform: scaleY(50)
 }
 
 hr {
