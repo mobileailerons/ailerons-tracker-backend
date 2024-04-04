@@ -1,6 +1,7 @@
 <section id="dashboard">
         <h2>Dashboard</h2>
         <hr />
+        {{ render_partial("map/map_preview.jinja") }}
         {{ render_partial("dashboard/individual_table.jinja", inds=inds) }}
         {{ render_partial("dashboard/get_started.jinja") }}
 </section>
