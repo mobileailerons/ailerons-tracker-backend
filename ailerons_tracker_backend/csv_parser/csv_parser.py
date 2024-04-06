@@ -1,4 +1,5 @@
 """ CSV file parser middleware """
+from datetime import timedelta
 from ailerons_tracker_backend.errors import ParserError
 from ailerons_tracker_backend.models.record_model import Record
 from ailerons_tracker_backend.models.record_field_model import LocalisationField, DepthField
@@ -38,7 +39,7 @@ class CsvParser:
         i = 0
         j = 0
         while i < len(loc_list) and j < len(depth_list):
-            if loc_list[i].record_timestamp == depth_list[j].record_timestamp:
+            if(abs(loc_list[i].record_timestamp - depth_list[j].record_timestamp) <= timedelta(minutes=10)):
                 merged_list.append(
                     Record(localisation_field_record=loc_list[i], depth_field_record=depth_list[j]).to_dict())
                 i += 1
