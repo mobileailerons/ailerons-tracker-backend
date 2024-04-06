@@ -1,4 +1,5 @@
 affine==2.4.0
+-e git+ssh://git@github.com/onatyr/ailerons-tracker-backend.git@d51b84824356e3a15745e14e3baf4ffff760bb12#egg=ailerons_tracker_backend
 annotated-types==0.6.0
 anyio==4.2.0
 attrs==23.2.0
@@ -20,6 +21,7 @@ EditorConfig==0.12.4
 Flask==3.0.0
 Flask-Cors==4.0.0
 flask-htmx==0.3.2
+Flask-Login==0.6.3
 geojson==2.5.0
 gotrue==2.1.0
 gunicorn==21.2.0
@@ -53,6 +55,7 @@ pyrsistent==0.20.0
 pytest==7.4.4
 python-dateutil==2.8.2
 python-dotenv==1.0.0
+python-mts @ file:///home/louis/Documents/Projets/python-mts
 pytz==2023.3.post1
 PyYAML==6.0.1
 rasterio==1.3.9

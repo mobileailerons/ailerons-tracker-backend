@@ -29,7 +29,7 @@
       {{ render_partial("shared/nav.jinja") }}
     </header>
     <main>
-      {{ render_partial('dashboard/dashboard.jinja', inds=inds) }}
+      <div hx-get="dashboard" hx-swap="outerHTML" hx-trigger="load"></div>
     </main>
   </body>
 </html>

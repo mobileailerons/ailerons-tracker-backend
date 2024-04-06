@@ -1,5 +1,6 @@
 """ Individual data upload blueprint """
 
+import flask_login
 from jinja2 import TemplateNotFound
 from jinja_partials import render_partial
 import postgrest
@@ -12,8 +13,8 @@ from ailerons_tracker_backend.clients.supabase_client import supabase
 individual_infos = Blueprint('individual_infos', __name__,
                              template_folder='templates')
 
-
 @individual_infos.post('/individual')
+@flask_login.login_required
 def create_individual():
     """ Create a new row in table individual """
     try:
@@ -54,8 +55,8 @@ def create_individual():
         current_app.logger.error(e.message)
         return e.message, 400
 
-
 @individual_infos.get('/new_individual')
+@flask_login.login_required
 def show():
     """ Get new individual window """
     try:
@@ -64,8 +65,8 @@ def show():
         current_app.logger.warning(e)
         abort(404)
 
-
 @individual_infos.get('/edit_individual')
+@flask_login.login_required
 def edit():
     """ Return edit window """
     try:
