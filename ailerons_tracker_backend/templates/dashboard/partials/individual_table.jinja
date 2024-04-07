@@ -1,0 +1,21 @@
+<table id="individual_table">
+    <thead>
+        {{ render_partial("dashboard/partials/individual_header.jinja") }}
+    </thead>
+    <tbody>
+        {% for ind in inds: %}{{ render_partial("dashboard/partials/individual_row.jinja", ind=ind) }}{% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                <button class="new-individual">Ajouter</button>
+            </td>
+        </tr>
+    </tfoot>
+</table>

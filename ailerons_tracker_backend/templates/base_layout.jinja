@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="Ailerons back-office portal" />
+        <meta name="keywords" content="Ailerons, back-office, portal" />
+        <link rel="stylesheet"
+              href="{{ url_for('portal.static', filename='styles.css') }}" />
+        <script src="https://unpkg.com/htmx.org@1.9.11"
+                integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
+                crossorigin="anonymous"></script>
+        <title>Portail Ailerons</title>
+    </head>
+    <body>
+        <header class="show" id="navbar">
+            <section id="logo-section">
+                <img height="auto"
+                     width="auto"
+                     id="main-logo"
+                     src="{{ url_for('portal.static', filename='Ailerons_Logo.png') }}"
+                     alt="Logo de l'association" />
+                <h1>Portail Ailerons</h1>
+            </section>
+            <nav class="navbar">
+                <li>
+                    <ul>
+                        <a>Connexion</a>
+                    </ul>
+                    <ul>
+                        <a hx-get="dashboard" hx-target="main" hx-swap="innerHTML">Dashboard</a>
+                    </ul>
+                    <ul>
+                        <a>Actus</a>
+                    </ul>
+                </li>
+            </nav>
+        </header>
+        <main>
+            <div hx-get="dashboard" hx-swap="outerHTML" hx-trigger="load"></div>
+        </main>
+    </body>
+</html>
