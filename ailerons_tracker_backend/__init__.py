@@ -11,9 +11,8 @@ from flask_cors import CORS
 from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.models.individual_model import Individual, Context
 from ailerons_tracker_backend.csv_parser.csv_parser import CsvParser
-from ailerons_tracker_backend.geojson_generator.generator import Generator
-from ailerons_tracker_backend.blueprints.ind_select import ind_select
-from ailerons_tracker_backend.utils.file_util import FileManager, FileFieldName
+from ailerons_tracker_backend.utils.file_util import FileManager
+from ailerons_tracker_backend.blueprints.portal import portal
 from .upload_image import upload_image
 from .errors import CloudinaryError, GeneratorError, InvalidFile
 from .clients.supabase_client import supabase
@@ -49,7 +48,7 @@ def create_app(test_config=None):
     jinja_partials.register_extensions(app)
 
     # Register a blueprint => blueprint routes are now active
-    app.register_blueprint(ind_select, url_prefix="/htmx")
+    app.register_blueprint(portal)
 
     @app.post('/upload')
     def upload_file():
