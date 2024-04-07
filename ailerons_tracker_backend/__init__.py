@@ -3,15 +3,17 @@
 __version__ = "0.6"
 
 import os
+import uuid
 import jinja_partials
 from flask import Flask, request
 import postgrest
 from flask_cors import CORS
 from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.models.individual_model import Individual, Context
-from ailerons_tracker_backend.csv_parser import csv_parser
+from ailerons_tracker_backend.csv_parser.csv_parser import CsvParser
 from ailerons_tracker_backend.geojson_generator.generator import Generator
 from ailerons_tracker_backend.blueprints.ind_select import ind_select
+from ailerons_tracker_backend.utils.file_util import FileManager, FileFieldName
 from .upload_image import upload_image
 from .errors import CloudinaryError, GeneratorError, InvalidFile
 from .clients.supabase_client import supabase
@@ -58,22 +60,20 @@ def create_app(test_config=None):
             associated_individual = request.form["ind-select"]
             app.logger.warning(associated_individual)
 
-            # A priori on aurait deux fichiers donc j'ai donné un nouveau nom à celui ci "
-            file_name, file_path = csv_parser.prepare_csv(request)
-            csv_id = supabase.create_csv_log(file_name)
+            csv_uuid = str(uuid.uuid4())
 
-            # plus besoin de la table jointe si j'ai bien compris mais je n'y ai pas touché
-            record_list, new_individual_id_list = csv_parser.parse_csv(
-                file_path, csv_id)
+            file_manager = FileManager(request, csv_uuid)
 
-            supabase.batch_insert("record", record_list)
-            supabase.batch_insert("individual_record_id",
-                                  new_individual_id_list)
+            csv_parser = CsvParser(file_manager)
 
-            os.remove(file_path)
+            supabase.create_csv_log(
+                csv_uuid, file_manager.loc_file.name, file_manager.depth_file.name)
+            supabase.batch_insert("record", csv_parser.record_list)
 
-            generator = Generator()
-            generator.generate()
+            file_manager.drop_all()
+
+            # generator = Generator()
+            # generator.generate()
 
             return "CSVs uploaded and geoJSONs generated", 200
 
@@ -87,8 +87,8 @@ def create_app(test_config=None):
             return e.message, 500
 
         except InvalidFile as e:
-            app.logger.error(e)
-            return e, 400
+            app.logger.error(e.message)
+            return e.message, 400
 
     @app.post('/news')
     def upload_article():

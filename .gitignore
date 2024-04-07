@@ -9,3 +9,4 @@ ailerons_tracker_backend.egg-info/
 **/.pytest_cache/
 .devcontainer/
 uploaded_csv/*.csv
+**/.DS_Store

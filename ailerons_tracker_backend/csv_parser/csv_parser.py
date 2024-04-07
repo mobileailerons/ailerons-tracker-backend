@@ -1,61 +1,53 @@
 """ CSV file parser middleware """
-import os
-from pathlib import Path
-import pandas as pd
-from werkzeug.utils import secure_filename
-
-from ailerons_tracker_backend.clients.supabase_client import supabase
-from ailerons_tracker_backend.errors import InvalidFile, ParserError
+from datetime import timedelta
+from ailerons_tracker_backend.errors import ParserError
 from ailerons_tracker_backend.models.record_model import Record
+from ailerons_tracker_backend.models.record_field_model import LocalisationField, DepthField
+from ailerons_tracker_backend.utils.file_util import FileManager, FileFieldName, File
 
-def prepare_csv(request):
-    """ Retrieve POST request CSV files and make a local copy
 
-    Args:
-        request (API request): Request data
-    """
-    try:
-        # Only gets one file for now; localization data
-        file = request.files["locFile"]
-        stem = Path(file.filename).stem
+class CsvParser:
+    """Class that manage the parsing of the different csv"""
 
-        file_name = secure_filename(stem)
+    def __init__(self, file_manager: FileManager):
+        self.csv_uuid = file_manager.csv_uuid
+        self.loc_df = self._parse_field_from_csv(file_manager.loc_file)
+        self.depth_df = self._parse_field_from_csv(file_manager.depth_file)
+        self.record_list = self._merge_lists()
 
-        file_path = os.path.join('./uploaded_csv', file_name)
-        file.save(file_path)
-        return file_name, file_path
+    def _parse_field_from_csv(self, file: File):
+        try:
+            data_list= []
 
-    except Exception as e:
-        raise InvalidFile(e) from e
+            field_class = LocalisationField if file.field_name == FileFieldName.LOCALISATION else DepthField
 
-def parse_csv(path, csv_id: str):
-    """ Parse a CSV file and return a list of entries 
-        and a list of matching individual_ids """
-    try:
-        absolute_path = os.path.abspath(path)
-        record_df = pd.read_csv(
-            absolute_path,
-            index_col=None,
-            encoding='ISO-8859-1',
-            engine='python',
-            on_bad_lines='error',
-            sep=';')
+            for row in file.df.itertuples(index=False):
+                new_field_record = field_class(row._asdict(), self.csv_uuid)
+                data_list.append(new_field_record)
 
-        record_list = []
-        individual_id_list = supabase.get_individual_ids()
-        new_individual_id_list = []
+            return data_list
 
-        for row in record_df.itertuples(index=False):
-            if not any(entry['individual_id'] == row.individual_id for entry in individual_id_list):
-                individual_id_list.append({'individual_id': row.individual_id})
-                new_individual_id_list.append(
-                    {'individual_id': row.individual_id})
+        except Exception as e:
+            raise ParserError() from e
 
-            new_record = Record(row._asdict())
-            new_record.csv_id = csv_id
-            record_list.append(new_record.__dict__)
+    def _merge_lists(self):
+        loc_list = sorted(self.loc_df, key=lambda x: x.record_timestamp)
+        depth_list = sorted(self.depth_df, key=lambda x: x.record_timestamp)
 
-        return record_list, new_individual_id_list
+        merged_list = []
 
-    except Exception as e:
-        raise ParserError() from e
+        i = 0
+        j = 0
+        while i < len(loc_list) and j < len(depth_list):
+            if(abs(loc_list[i].record_timestamp - depth_list[j].record_timestamp) <= timedelta(minutes=10)):
+                merged_list.append(
+                    Record(localisation_field_record=loc_list[i], depth_field_record=depth_list[j]).to_dict())
+                i += 1
+                j += 1
+            else:
+                if depth_list[j].record_timestamp < loc_list[i].record_timestamp:
+                    j += 1
+                else:
+                    i += 1
+
+        return merged_list
