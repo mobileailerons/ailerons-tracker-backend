@@ -20,7 +20,7 @@ def show():
         if htmx:
             return render_partial('dashboard/dashboard.jinja', inds=individuals)
 
-        return render_template('basic_layout.jinja')
+        return render_template('base_layout.jinja')
     
     except TemplateNotFound as e:
         current_app.logger.warning(e)
