@@ -7,9 +7,13 @@
         <meta name="keywords" content="Ailerons, back-office, portal" />
         <link rel="stylesheet"
               href="{{ url_for('portal.static', filename='styles.css') }}" />
+        <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css"
+              rel="stylesheet" />
+        <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
         <script src="https://unpkg.com/htmx.org@1.9.11"
                 integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
                 crossorigin="anonymous"></script>
+        <script defer src="{{ url_for('portal.static', filename='script.js') }}"> </script>
         <title>Portail Ailerons</title>
     </head>
     <body>
