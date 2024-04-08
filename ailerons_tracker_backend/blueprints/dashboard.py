@@ -15,7 +15,7 @@ def show():
     htmx = HTMX(current_app)
 
     try:
-        individuals = supabase.get_all('individual_new')
+        individuals = supabase.get_all('individual')
 
         if htmx:
             return render_partial('dashboard/dashboard.jinja', inds=individuals)
