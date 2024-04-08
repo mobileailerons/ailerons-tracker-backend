@@ -2,6 +2,7 @@
 
 from datetime import datetime
 
+
 class RecordField:
     """ Model for a field of data record. """
 
@@ -15,14 +16,22 @@ class RecordField:
         self.record_timestamp = self.date_to_iso(row['record_timestamp'])
         self.csv_uuid = csv_uuid
 
+    @property
+    def timestamp_datetime(self):
+        return datetime.fromisoformat(self.record_timestamp)
+
+
 class DepthField(RecordField):
     """DepthField extends RecordField and contain depth data"""
+
     def __init__(self, row, csv_uuid):
         super().__init__(row, csv_uuid)
         self.depth = row['depth']
 
+
 class LocalisationField(RecordField):
     """LocalisationField extends RecordField and contain localisation data"""
+
     def __init__(self, row, csv_uuid):
         super().__init__(row, csv_uuid)
         self.longitude = row['longitude'].replace(',', '.')
