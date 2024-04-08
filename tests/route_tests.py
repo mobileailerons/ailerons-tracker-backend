@@ -50,7 +50,9 @@ def test_upload_route(client):
     """ Test upload route by mocking a request """
 
     response = client.post("/upload", data={
-        "locFile": (resources / "data_test.csv").open("rb")})
+        "ind-select": 1,
+        "loc_file": (resources / "test_upload_loc.csv").open("rb"),
+        "depth_file": (resources / "test_upload_depth.csv").open("rb")})
 
     logging.error(response)
-    assert response.status_code in (200, 304)
+    assert response.status_code == 200
