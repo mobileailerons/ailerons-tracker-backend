@@ -18,6 +18,10 @@
     </td>
     <td class="action">
         <button class="edit">Editer</button>
-        <button class="upload">Upload</button>
+        <button class="upload"
+                hx-get="/portal/csv_upload?id={{ ind.id }}"
+                hx-trigger="click"
+                hx-target="main"
+                hx-swap="innerHTML swap:300ms settle:50ms show:window:top">Upload</button>
     </td>
 </tr>
