@@ -3,8 +3,6 @@
 import logging
 from pathlib import Path
 
-from flask import render_template
-
 resources = Path(__file__).parent / "resources"
 
 
