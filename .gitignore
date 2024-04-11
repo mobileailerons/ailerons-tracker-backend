@@ -10,5 +10,6 @@ ailerons_tracker_backend.egg-info/
 .devcontainer/
 uploaded_csv/*.csv
 **/.DS_Store
-node_modules/*
 stylintrc.json
+node_modules/
+
