@@ -36,7 +36,7 @@ def upload_file():
 
         file_manager.drop_all()
 
-        return make_response(render_partial('dashboard/dashboard.jina'), push_url='/dashboard'), 200
+        return make_response(render_partial('dashboard/dashboard.jinja'), push_url='/dashboard'), 200
 
     # Erreur supabase
     except postgrest.exceptions.APIError as e:
