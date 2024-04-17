@@ -59,7 +59,6 @@ def test_upload_route(client):
     logging.error(response)
     assert response.status_code == 200
 
-
 def test_portal_route(client):
     """ Test portal route """
 
