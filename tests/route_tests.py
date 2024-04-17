@@ -3,6 +3,8 @@
 import logging
 from pathlib import Path
 
+from flask import render_template
+
 resources = Path(__file__).parent / "resources"
 
 
@@ -55,4 +57,25 @@ def test_upload_route(client):
         "depth_file": (resources / "test_upload_depth.csv").open("rb")})
 
     logging.error(response)
+    assert response.status_code == 200
+
+def test_portal_route(client):
+    """ Test portal route """
+
+    response = client.get("/portal")
+    assert response.status_code == 308
+
+
+def test_dashboard_route(client):
+    """ Test dashboard route in the context of a regular request """
+
+    response = client.get("/portal/dashboard")
+    assert response.status_code == 200
+
+
+def test_dashboard_route_htmx(client):
+    """ Test dashboard route in the context of an htmx request """
+
+    headers = {'HTTP_HX-Request': 'true'}
+    response = client.get("/portal/dashboard", headers=headers)
     assert response.status_code == 200

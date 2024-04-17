@@ -1,0 +1,23 @@
+<tr>
+    <td class="icon">
+        <img src="{{ ind.icon }}" height="24px" width="24px" alt="Manta ray icon" />
+    </td>
+    <td class="id">{{ ind.id }}</td>
+    <td class="text">{{ ind.name }}</td>
+    <td class="text">{{ ind.sex }}</td>
+    <td class="desc">{{ ind.desc }}</td>
+    <td class="img">
+        {% if ind.pictures %}
+            <img src="{{ ind.pictures[0] }}"
+                 height="40px"
+                 width="40px"
+                 alt="Associated image file" />
+        {% else %}
+            Null
+        {% endif %}
+    </td>
+    <td class="action">
+        <button class="edit">Editer</button>
+        <button class="upload">Upload</button>
+    </td>
+</tr>
