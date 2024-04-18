@@ -36,6 +36,13 @@ class SupabaseClient:
             "*").eq(col, matcher).execute()
         return res.data
 
+    def get_exact(self, col: str, matcher: str, table: str):
+        """ Get specific row from table where primary key matches provided value """
+
+        res = self._client.table(table).select(
+            "*").eq(col, matcher).execute()
+        return res.data[0]
+
     def upsert(self, obj: object, table: str):
         """ Insert or update a row in selected table """
 
@@ -46,12 +53,12 @@ class SupabaseClient:
 
     def create_csv_log(self, uuid: str, loc_file_name: str, depth_file_name: str):
         """ Create and insert a CSV log in the DB and returns the generated ID """
-        csv_log = { 'uuid': uuid,
+        csv_log = {'uuid': uuid,
                    'loc_file': loc_file_name,
-                    'depth_file': depth_file_name }
+                   'depth_file': depth_file_name}
         data = self._client.table('csv').insert(csv_log).execute()
         content = data.__dict__.get('data')[0]
-        
+        return content
 
     def batch_insert(self, table: str, datalist: list):
         """ Batch insert new rows in table Record """

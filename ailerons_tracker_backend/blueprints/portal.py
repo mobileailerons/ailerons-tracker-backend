@@ -3,11 +3,13 @@
 from flask import Blueprint, abort, current_app, render_template
 from jinja2 import TemplateNotFound
 from ailerons_tracker_backend.blueprints.dashboard import dashboard
+from ailerons_tracker_backend.blueprints.csv_upload import csv_upload
 
 portal = Blueprint('portal', __name__,
                    template_folder='templates', static_folder='static', url_prefix='/portal')
 
 portal.register_blueprint(dashboard)
+portal.register_blueprint(csv_upload)
 
 
 @portal.route('/')

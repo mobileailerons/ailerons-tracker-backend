@@ -3,19 +3,15 @@
 __version__ = "0.6"
 
 import os
-import uuid
 import jinja_partials
 from flask import Flask, request
 import postgrest
 from flask_cors import CORS
 from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.models.individual_model import Individual, Context
-from ailerons_tracker_backend.csv_parser.csv_parser import CsvParser
-from ailerons_tracker_backend.utils.file_util import FileManager
 from ailerons_tracker_backend.blueprints.portal import portal
 from .upload_image import upload_image
-from .errors import CloudinaryError, GeneratorError, InvalidFile
-from .clients.supabase_client import supabase
+from .errors import CloudinaryError, InvalidFile
 
 
 def create_app(test_config=None):
@@ -49,45 +45,6 @@ def create_app(test_config=None):
 
     # Register a blueprint => blueprint routes are now active
     app.register_blueprint(portal)
-
-    @app.post('/upload')
-    def upload_file():
-        """ Parse a CSV file and insert data in DB """
-
-        try:
-            # On récupère le nom/id de l'individu auquel correspondent les fichiers
-            associated_individual = request.form["ind-select"]
-            app.logger.warning(associated_individual)
-
-            csv_uuid = str(uuid.uuid4())
-
-            file_manager = FileManager(request, csv_uuid)
-
-            csv_parser = CsvParser(file_manager)
-
-            supabase.create_csv_log(
-                csv_uuid, file_manager.loc_file.name, file_manager.depth_file.name)
-            supabase.batch_insert("record", csv_parser.record_list)
-
-            file_manager.drop_all()
-
-            # generator = Generator()
-            # generator.generate()
-
-            return "CSVs uploaded and geoJSONs generated", 200
-
-        # Erreur supabase
-        except postgrest.exceptions.APIError as e:
-            app.logger.error(e.message)
-            return e.message, 304
-
-        except GeneratorError as e:
-            app.logger.error(e.message)
-            return e.message, 500
-
-        except InvalidFile as e:
-            app.logger.error(e.message)
-            return e.message, 400
 
     @app.post('/news')
     def upload_article():

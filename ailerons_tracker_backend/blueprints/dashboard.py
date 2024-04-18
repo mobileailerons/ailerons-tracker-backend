@@ -1,6 +1,6 @@
 """ Dashboard blueprint """
 
-from flask_htmx import HTMX
+from flask_htmx import HTMX, make_response
 from jinja_partials import render_partial
 from flask import Blueprint, render_template, abort, current_app
 from jinja2 import TemplateNotFound
@@ -18,10 +18,12 @@ def show():
         individuals = supabase.get_all('individual')
 
         if htmx:
-            return render_partial('dashboard/dashboard.jinja', inds=individuals)
+            return make_response(
+                render_partial('dashboard/dashboard.jinja', inds=individuals),
+            replace_url='/portal/dashboard')
 
         return render_template('base_layout.jinja')
-    
+
     except TemplateNotFound as e:
         current_app.logger.warning(e)
         abort(404)

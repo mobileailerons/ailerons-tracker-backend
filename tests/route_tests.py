@@ -3,8 +3,6 @@
 import logging
 from pathlib import Path
 
-from flask import render_template
-
 resources = Path(__file__).parent / "resources"
 
 
@@ -51,7 +49,7 @@ def test_individual_route(client):
 def test_upload_route(client):
     """ Test upload route by mocking a request """
 
-    response = client.post("/upload", data={
+    response = client.post("/portal/upload", data={
         "ind-select": 1,
         "loc_file": (resources / "test_upload_loc.csv").open("rb"),
         "depth_file": (resources / "test_upload_depth.csv").open("rb")})
