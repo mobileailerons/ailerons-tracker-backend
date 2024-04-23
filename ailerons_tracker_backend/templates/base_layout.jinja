@@ -37,7 +37,7 @@
             </nav>
         </header>
         <main>
-            <div hx-get="dashboard" hx-swap="outerHTML" hx-trigger="load"></div>
+			<div hx-get="/portal/{{ view }}" hx-swap="outerHTML" hx-trigger="load"></div>
         </main>
     </body>
 </html>

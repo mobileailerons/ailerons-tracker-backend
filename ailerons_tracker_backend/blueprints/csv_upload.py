@@ -68,13 +68,13 @@ def show():
         individual_data = supabase.get_exact(
             'id', individual_id, "individual")
         # Render template returns raw HTML
-        if (htmx):
+        if htmx:
             return make_response(
                 render_partial('csv_upload/csv_upload.jinja',
                                ind=individual_data),
                 replace_url=f'/portal/csv_upload?id={individual_id}')
 
-        return render_template('base_layout.jinja')
+        return render_template('base_layout.jinja', view=f'csv_upload?id={individual_id}')
 
     except TemplateNotFound as e:
         current_app.logger.warning(e)

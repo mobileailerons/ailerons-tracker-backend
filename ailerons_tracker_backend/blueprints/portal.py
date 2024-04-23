@@ -19,7 +19,7 @@ def show():
     """ Serve portal """
     try:
         # Render template returns raw HTML
-        return render_template('base_layout.jinja')
+        return render_template('base_layout.jinja', view='dashboard')
 
     except TemplateNotFound as e:
         current_app.logger.warning(e)

@@ -24,7 +24,7 @@ def show():
                 render_partial('dashboard/dashboard.jinja', inds=individuals),
             replace_url='/portal/dashboard')
 
-        return render_template('base_layout.jinja')
+        return render_template('base_layout.jinja', view="dashboard")
 
     except TemplateNotFound as e:
         current_app.logger.warning(e)
