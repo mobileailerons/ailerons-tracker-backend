@@ -15,6 +15,7 @@ from flask_login import login_required
 csv_upload = Blueprint('csv_upload', __name__,
                        template_folder='templates')
 
+
 @csv_upload.post('/upload')
 @login_required
 def upload_file():
@@ -61,13 +62,13 @@ def show():
         htmx = HTMX(current_app)
 
         individual_id = request.args.get('id')
-        
+
         if not individual_id:
             raise MissingParamError('id')
 
         individual_data = supabase.get_exact(
             'id', individual_id, "individual")
-        # Render template returns raw HTML
+
         if htmx:
             return make_response(
                 render_partial('csv_upload/csv_upload.jinja',
@@ -79,3 +80,7 @@ def show():
     except TemplateNotFound as e:
         current_app.logger.warning(e)
         abort(404)
+
+    except MissingParamError as e:
+        current_app.logger.error(e)
+        return e, 400
