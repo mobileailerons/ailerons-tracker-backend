@@ -47,4 +47,4 @@ def test_invalid_pwd(client):
         headers=headers
     )
 
-    assert response.status_code == 403
+    assert "Mot de passe incorrect" in response.data.decode("utf-8")
