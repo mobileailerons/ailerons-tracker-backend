@@ -10,12 +10,13 @@ from ailerons_tracker_backend.clients.supabase_client import supabase
 from ailerons_tracker_backend.csv_parser.csv_parser import CsvParser
 from ailerons_tracker_backend.errors import GeneratorError, InvalidFile, MissingParamError
 from ailerons_tracker_backend.utils.file_util import FileManager
+from flask_login import login_required
 
 csv_upload = Blueprint('csv_upload', __name__,
                        template_folder='templates')
 
-
 @csv_upload.post('/upload')
+@login_required
 def upload_file():
     """ Parse a CSV file and insert data in DB """
 
@@ -53,6 +54,7 @@ def upload_file():
 
 
 @csv_upload.get('/csv_upload')
+@login_required
 def show():
     """ Serve csv upload page """
     try:
