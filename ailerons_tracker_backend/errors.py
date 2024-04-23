@@ -46,3 +46,17 @@ class ParserError(Exception):
 
     def __init__(self):
         self.message = "Something went wrong while parsing CSV file"
+
+
+class EnvVarError(Exception):
+    """ Environment variable not set or accessed properly """
+
+    def __init__(self, env_var_name: str) -> None:
+        self.message = f"Could not access environment variable: {env_var_name}"
+
+
+class MissingParamError(Exception):
+    """ Missing parameter in request """
+
+    def __init__(self, param_name: str) -> None:
+        self.message = f"Missing parameter {param_name} in request"

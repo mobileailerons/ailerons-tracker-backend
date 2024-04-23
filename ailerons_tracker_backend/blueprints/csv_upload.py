@@ -8,7 +8,7 @@ from flask import Blueprint, abort, flash, render_template, request, current_app
 from jinja2 import TemplateNotFound
 from ailerons_tracker_backend.clients.supabase_client import supabase
 from ailerons_tracker_backend.csv_parser.csv_parser import CsvParser
-from ailerons_tracker_backend.errors import GeneratorError, InvalidFile
+from ailerons_tracker_backend.errors import GeneratorError, InvalidFile, MissingParamError
 from ailerons_tracker_backend.utils.file_util import FileManager
 
 csv_upload = Blueprint('csv_upload', __name__,
@@ -59,6 +59,9 @@ def show():
         htmx = HTMX(current_app)
 
         individual_id = request.args.get('id')
+        
+        if not individual_id:
+            raise MissingParamError('id')
 
         individual_data = supabase.get_exact(
             'id', individual_id, "individual")
