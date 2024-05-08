@@ -21,6 +21,7 @@ Flask==3.0.0
 Flask-Cors==4.0.0
 flask-htmx==0.3.2
 Flask-Login==0.6.3
+Flask-WTF==1.2.1
 geojson==2.5.0
 gotrue==2.1.0
 gunicorn==21.2.0
@@ -77,3 +78,4 @@ tzdata==2023.4
 urllib3==2.0.7
 websockets==11.0.3
 Werkzeug==3.0.1
+WTForms==3.1.2

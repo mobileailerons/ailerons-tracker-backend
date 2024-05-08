@@ -3,14 +3,15 @@
 __version__ = "0.6"
 
 import os
+from flask_login import FlaskLoginClient
 from dotenv import load_dotenv
+from flask_wtf import CSRFProtect
 import jinja_partials
 import flask_login
 from flask import Flask, request
 import postgrest
 from flask_cors import CORS
 from ailerons_tracker_backend.models.article_model import Article
-from ailerons_tracker_backend.models.individual_model import Individual, Context
 from ailerons_tracker_backend.blueprints.portal import portal
 from .upload_image import upload_image
 from .errors import CloudinaryError, InvalidFile
@@ -30,6 +31,7 @@ def create_app(test_config=None):
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
+
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
@@ -37,12 +39,15 @@ def create_app(test_config=None):
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
+
     except OSError:
         pass
 
     # Enable CORS because HTMX requests are sent as "OPTIONS"
     # by modern browsers which causes CORS errors
     CORS(app)
+    csrf = CSRFProtect()
+    csrf.init_app(app)
 
     # Enable Jinja Partials, which allows us to render HTML fragments instead of pages,
     # kinda like components in Vue or React.
@@ -62,6 +67,7 @@ def create_app(test_config=None):
     def unauthorized_handler():
         return jinja_partials.render_partial("login/login_section.jinja")
 
+    app.test_client_class = FlaskLoginClient
     # Register a blueprint => blueprint routes are now active
     app.register_blueprint(portal)
 
