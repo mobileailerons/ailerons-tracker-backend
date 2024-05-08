@@ -27,6 +27,12 @@ def test_get_match():
     assert isinstance(res, list)
 
 
+def test_get_exact():
+    """ Test querying for an exact match """
+    res = supabase.get_exact("id", "1", "individual")
+    assert isinstance(res, dict)
+
+
 def test_get_individual_ids():
     """ Test querying for a list of all ind. IDs """
     data = supabase.get_individual_ids()

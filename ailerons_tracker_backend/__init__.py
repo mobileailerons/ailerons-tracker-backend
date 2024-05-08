@@ -89,41 +89,6 @@ def create_app(test_config=None):
             app.logger.error(e.message)
             return e.message, 304
 
-    @app.post('/individual')
-    def create_individual():
-        try:
-            items = request.files.items(multi=True)
-            image_urls = []
-
-            for item in items:
-                image_url = upload_image(item[1])
-
-                image_urls.append(image_url)
-
-            ind_data = Individual(
-                request.form["indName"],
-                request.form["indSex"],
-                image_urls).upload()
-            ind_id = ind_data.get('id')
-
-            context_data = Context(ind_id, request.form).upload()
-
-            content = {
-                'message': 'Successfully uploaded new individual',
-                'Individual data': ind_data,
-                'Context': context_data
-            }
-
-            return content, 200
-
-        except postgrest.exceptions.APIError as e:
-            app.logger.error(e.message)
-            return e.message, 304
-
-        except InvalidFile as e:
-            app.logger.error(e.message)
-            return e.message, 400
-
     # Get a very useful log of all routes urls when running the server
     app.logger.warning(app.url_map)
 
