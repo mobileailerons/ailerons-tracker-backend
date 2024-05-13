@@ -1,5 +1,6 @@
 <button class="cancel"
-        hx-get="{{ action }}"
+hx-get="/portal/{{ action }}"
+		hx-push-url="true"
         hx-trigger="click"
         hx-target="main"
         hx-swap="innerHTML swap:300ms settle:50ms show:window:top">Annuler</button>

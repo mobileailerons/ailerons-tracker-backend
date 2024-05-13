@@ -1,4 +1,5 @@
 """ Supabase Client test suite """
+
 from pathlib import Path
 import postgrest
 import pytest
@@ -18,13 +19,21 @@ def test_init():
 
 def test_get_all():
     """ Test querying for all table entries"""
-    assert isinstance(supabase.get_all("individual"), list)
+    assert isinstance(
+        supabase.get_all("individual"),
+        list)
 
 
 def test_get_match():
     """ Test querying for specific matching rows """
     res = supabase.get_match("id", "1", "individual")
     assert isinstance(res, list)
+
+
+def test_get_exact():
+    """ Test querying for an exact match """
+    res = supabase.get_exact("id", "1", "individual")
+    assert (isinstance(res, dict) and ('id' in res))
 
 
 def test_get_individual_ids():
@@ -45,12 +54,12 @@ class TestUpsertFeature():
     def test_valid_type(self):
         """ Test inserting in feature table """
 
-        res = supabase.upsert(test_point, 'point_geojson')
+        res = supabase.upsert(test_point.__dict__, 'point_geojson')
 
-        assert isinstance(res, dict)
+        assert (isinstance(res, list)) and ('id' in res[0])
 
     def test_invalid_type(self):
         """ Test attempting insert in wrong table """
 
         with pytest.raises(postgrest.exceptions.APIError):
-            supabase.upsert(test_point, 'individual')
+            supabase.upsert(test_point.__dict__, 'individual')

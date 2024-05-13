@@ -1,4 +1,9 @@
-<form hx-post="login/" hx-encoding="multipart/form-data" hx-target="main" hw-swap="innerHTML">
+<form hx-post="/portal/login"
+      hx-encoding="multipart/form-data"
+      hx-target="main"
+      hw-swap="innerHTML"
+      class="unpadded">
+    {{ form.csrf_token }}
     {{ render_partial("shared/inputs/password.jinja") }}
-    <input class="submit" type="submit"/>
+    <input class="submit" type="submit" />
 </form>

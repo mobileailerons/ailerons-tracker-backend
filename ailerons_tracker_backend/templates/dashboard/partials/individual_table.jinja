@@ -3,18 +3,32 @@
         {{ render_partial("dashboard/partials/individual_header.jinja") }}
     </thead>
     <tbody>
-        {% for ind in inds: %}{{ render_partial("dashboard/partials/individual_row.jinja", ind=ind) }}{% endfor %}
+        {% for ind in inds: %}
+            {{ render_partial("dashboard/partials/individual_row.jinja", ind=ind) }}
+        {% endfor %}
     </tbody>
     <tfoot>
         <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
             <td>
-                <button class="new-individual">Ajouter</button>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+                <button class="new-individual"
+                        hx-target="main"
+                        hx-swap="innerHTML"
+                        hx-push-url="true"
+                        hx-get="individual/new">
+                    Ajouter
+                </button>
             </td>
         </tr>
     </tfoot>

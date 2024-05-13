@@ -76,4 +76,5 @@ def test_dashboard_route_htmx(client):
 
     headers = {'HTTP_HX-Request': 'true'}
     response = client.get("/portal/dashboard", headers=headers)
+
     assert response.status_code == 200

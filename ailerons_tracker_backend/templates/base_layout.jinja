@@ -20,15 +20,23 @@
                      id="main-logo"
                      src="{{ url_for('portal.static', filename='Ailerons_Logo.png') }}"
                      alt="Logo de l'association" />
-                <h1>Portail Ailerons</h1>
+                <h1>
+                    Portail Ailerons
+                </h1>
             </section>
             <nav class="navbar">
                 <li>
                     <ul>
-                        <a hx-get="login" hx-target="main" hx-swap="innerHTML">Connexion</a>
+                        <a hx-get="/portal/login"
+                           hx-target="main"
+                           hx-push-url="true"
+                           hx-swap="innerHTML">Connexion</a>
                     </ul>
                     <ul>
-                        <a hx-get="dashboard" hx-target="main" hx-swap="innerHTML">Dashboard</a>
+                        <a hx-get="/portal/dashboard"
+                           hx-push-url="true"
+                           hx-target="main"
+                           hx-swap="innerHTML">Dashboard</a>
                     </ul>
                     <ul>
                         <a>Actus</a>
@@ -37,7 +45,12 @@
             </nav>
         </header>
         <main>
-			<div hx-get="/portal/{{ view }}" hx-swap="outerHTML" hx-trigger="load"></div>
+            <div hx-get="{{ view }}"
+                 hx-push-url="true"
+                 hx-target="main"
+                 hx-swap="innerHTML"
+                 hx-trigger="load">
+            </div>
         </main>
     </body>
 </html>
