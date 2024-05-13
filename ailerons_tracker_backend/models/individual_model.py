@@ -1,41 +1,44 @@
 """ Individual and Context models """
-from ailerons_tracker_backend.clients.supabase_client import supabase
+
+from typing import List
+from sqlalchemy import Date, DateTime, Integer, Text, func
+from sqlalchemy.orm import Mapped, mapped_column as mc, relationship as rel
+from ailerons_tracker_backend.db import db
+from ailerons_tracker_backend.models.picture_model import Picture
 
 
-class Individual:
-    """ Model for an individual """
+class Individual(db.Model):
+    """ Model for an individual
 
-    def __init__(self, name: str, sex: str, image_urls: list[str]):
-        self.name: str = name
-        self.sex: str = sex
-        self.pictures = image_urls
+    Attributes:
+        id(int): ID, auto.
+        created_at (timestamp): auto.
+        common_name (str): auto.
+        binomial_name (str): auto.
+        icon (int): auto.
+        individual_name (str): unique.
+        sex (str)
+        description (str)
+        picture: relationship, list of Picture entities.
+        context: relationship, Context entity. """
 
-    def upload(self):
-        """ Insert the object as a new row in table 'individual' """
+    id: Mapped[int] = mc(Integer,
+                         primary_key=True,
+                         unique=True)
 
-        data = supabase.upsert(self, 'individual')
-        return data
+    created_at: Mapped[Date] = mc(DateTime,
+                                  default=func.now())
 
+    common_name: Mapped[str] = mc(Text,
+                                  default='Diable de mer méditerranéen')
 
-class Context:
-    """ Model for an individual's tagging context """
+    binomial_name: Mapped[str] = mc(default='Mobula mobular')
+    icon: Mapped[int] = mc(default=1)
+    individual_name: Mapped[str] = mc(unique=True)
+    sex: Mapped[str] = mc(Text)
+    description: Mapped[str] = mc(Text)
+    picture: Mapped[List['Picture']] = rel(back_populates='individual',
+                                           cascade='all')
 
-    def __init__(self, ind_id, form):
-        self.date = form['date']
-        self.individual_id: int = ind_id
-        self.situation: str = form['situation']
-        self.size: int = form['indSize']
-        self.mature: bool = form['mature']
-        self.feeding: bool = form['feeding']
-        self.reproduction: bool = form['reproduction']
-        self.gestation: bool = form['gestation']
-        self.jumping: bool = form['jumping']
-        self.injured: bool = form['injured']
-        self.sick: bool = form['sick']
-        self.parasites: bool = form['parasites']
-
-    def upload(self):
-        """ Insert the object as a new row in table 'context' """
-
-        data = supabase.upsert(self, 'context')
-        return data
+    context: Mapped['Context'] = rel(back_populates='individual',
+cascade="all, delete-orphan")
