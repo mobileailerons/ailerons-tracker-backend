@@ -1,11 +1,13 @@
 """ Dashboard blueprint """
 
-from flask_htmx import HTMX, make_response
+from flask_htmx import HTMX
 from jinja_partials import render_partial
-from flask import Blueprint, render_template, abort, current_app
+from flask import Blueprint, abort, current_app, render_template
 from flask_login import login_required
 from jinja2 import TemplateNotFound
-from ailerons_tracker_backend.clients.supabase_client import supabase
+
+from ailerons_tracker_backend.db import db
+from ailerons_tracker_backend.models.individual_model import Individual
 
 dashboard = Blueprint('dashboard', __name__, template_folder='templates')
 
@@ -14,17 +16,20 @@ dashboard = Blueprint('dashboard', __name__, template_folder='templates')
 @login_required
 def show():
     """ Get dashboard window """
+
     htmx = HTMX(current_app)
 
     try:
-        individuals = supabase.get_all('individual')
+        individuals = db.session.execute(
+            db.select(Individual)
+        ).scalars().all()
+
 
         if htmx:
-            return make_response(
-                render_partial('dashboard/dashboard.jinja', inds=individuals),
-            replace_url='/portal/dashboard')
 
-        return render_template('base_layout.jinja', view="dashboard")
+            return render_partial('dashboard/dashboard.jinja', inds=individuals)
+
+        return render_template('base_layout.jinja', view='dashboard')
 
     except TemplateNotFound as e:
         current_app.logger.warning(e)
