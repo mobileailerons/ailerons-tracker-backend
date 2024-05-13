@@ -8,7 +8,7 @@ import postgrest
 from flask_login import FlaskLoginClient
 from dotenv import load_dotenv
 from flask_wtf import CSRFProtect
-import jinja_partials
+from jinja_partials import render_partial, register_extensions
 import flask_login
 from flask import Flask, request
 from flask_cors import CORS
@@ -31,8 +31,9 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY=os.getenv("APP_SECRET_KEY"),
         # URI can be found in Supabase dashboard, pwd can be reset there as well
-        SQLALCHEMY_DATABASE_URI=f"postgresql://postgres.rddizwstjdinzyzvnuun:{os.getenv('DB_PWD')}@aws-0-eu-central-1.pooler.supabase.com:5432/postgres"
-    )
+        SQLALCHEMY_DATABASE_URI=f"postgresql://" \
+        f"postgres.rddizwstjdinzyzvnuun:{os.getenv('DB_PWD')}" \
+        "@aws-0-eu-central-1.pooler.supabase.com:5432/postgres")
 
     db.init_app(app)
 
@@ -60,7 +61,7 @@ def create_app(test_config=None):
     csrf.init_app(app)
 
     # Enable Jinja Partials, which allows us to render HTML fragments instead of pages
-    jinja_partials.register_extensions(app)
+    register_extensions(app)
 
     # Initialize logging manager
     login_manager = flask_login.LoginManager()
@@ -72,10 +73,14 @@ def create_app(test_config=None):
         if user == 'Admin':
             return User()
 
+        return
+
     @ login_manager.unauthorized_handler
     def unauthorized_handler():
         form = LoginForm()
-        return make_response(jinja_partials.render_partial("login/login_section.jinja", form=form), push_url="/portal/login")
+        return make_response(
+            render_partial("login/login_section.jinja", form=form),
+            push_url="/portal/login")
 
     app.test_client_class = FlaskLoginClient
 

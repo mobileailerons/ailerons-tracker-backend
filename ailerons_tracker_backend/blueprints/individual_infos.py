@@ -24,7 +24,7 @@ def upload_images(files: list[FileStorage]) -> list[str]:
     """ Parse and upload image files.
 
     Args:
-        files (list[FileStorage]): form data (request file objects) that might also have been populated with existing row data (URL strings) """
+        files (list[FileStorage]): request files. """
 
     image_urls = []
 

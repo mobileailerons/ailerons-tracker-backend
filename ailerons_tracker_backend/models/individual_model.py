@@ -1,7 +1,8 @@
 """ Individual and Context models """
+
 from typing import List
 from sqlalchemy import Date, DateTime, Integer, Text, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column as mc, relationship as rel
 from ailerons_tracker_backend.db import db
 from ailerons_tracker_backend.models.picture_model import Picture
 
@@ -17,34 +18,27 @@ class Individual(db.Model):
         icon (int): auto.
         individual_name (str): unique.
         sex (str)
-        picture (PostgreSQL Array)
         description (str)
-        context: relationship, doesn't appear in database but allow joins, back-populating and cascades.
-    """
+        picture: relationship, list of Picture entities.
+        context: relationship, Context entity. """
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, unique=True)
+    id: Mapped[int] = mc(Integer,
+                         primary_key=True,
+                         unique=True)
 
-    created_at: Mapped[Date] = mapped_column(DateTime, default=func.now())
+    created_at: Mapped[Date] = mc(DateTime,
+                                  default=func.now())
 
-    common_name: Mapped[str] = mapped_column(
-        Text, default='Diable de mer méditerranéen')
+    common_name: Mapped[str] = mc(Text,
+                                  default='Diable de mer méditerranéen')
 
-    binomial_name: Mapped[str] = mapped_column(default='Mobula mobular')
+    binomial_name: Mapped[str] = mc(default='Mobula mobular')
+    icon: Mapped[int] = mc(default=1)
+    individual_name: Mapped[str] = mc(unique=True)
+    sex: Mapped[str] = mc(Text)
+    description: Mapped[str] = mc(Text)
+    picture: Mapped[List['Picture']] = rel(back_populates='individual',
+                                           cascade='all')
 
-    icon: Mapped[int] = mapped_column(default=1)
-
-    individual_name: Mapped[str] = mapped_column(unique=True)
-
-    sex: Mapped[str] = mapped_column(Text)
-
-    description: Mapped[str] = mapped_column(Text)
-
-    picture: Mapped[List['Picture']] = relationship(
-        back_populates='individual',
-        cascade="all"
-    )
-
-    context: Mapped['Context'] = relationship(
-        back_populates='individual',
-        cascade="all, delete-orphan"
-    )
+    context: Mapped['Context'] = rel(back_populates='individual',
+cascade="all, delete-orphan")
