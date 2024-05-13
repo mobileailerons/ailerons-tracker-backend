@@ -455,6 +455,16 @@ div.image_browser {
 	box-shadow: inset, 2px,2px, 4px, var(--dark-grey);
 }
 
+#help {
+	width: 80vw;
+	padding: 1rem;
+	border-radius: 0.5rem;
+}
+
+#help > h3 {
+	margin-bottom: 0.5rem;
+}
+
 img.thumbnail {
 	width: 80px;
 	height: auto;
