@@ -24,7 +24,7 @@ def test_news_route(client):
             "newsDate": "2017-06-01T08:30"
         })
 
-    assert response.status_code in (200)
+    assert response.status_code == "200"
 
 
 def test_new_individual_route(app, client):
@@ -46,17 +46,17 @@ def test_new_individual_route(app, client):
 
         response = client.post(
             "/portal/individual/new",
-            data=dict(
-                individual_name='Poupette',
-                sex='Femelle',
-                picture=(
+            data={
+                "individual_name": 'Poupette',
+                "sex": 'Femelle',
+                "picture": (
                     resources / "test.png").open("rb"),
-                description='...',
-                behavior='Complétement zinzin celle là.',
-                size=8,
-                situation='Seul',
-                date=date.today().isoformat(),
-            ))
+                "description": '...',
+                "behavior": 'Complétement zinzin celle là.',
+                "size": 8,
+                "situation": 'Seul',
+                "date": date.today().isoformat(),
+            })
 
         assert response.status_code == 200
 
@@ -73,8 +73,8 @@ def test_edit_individual_route(app, client):
 
         response = client.post(
             f"/portal/individual/edit?id={ind.id}",
-            data=dict(
-                description='... pas sérieux.')
+            data={
+                "description": '... pas sérieux.'}
         )
 
         assert response.status_code == 200
@@ -84,7 +84,7 @@ def test_upload_route(client):
     """ Test upload route by mocking a request """
 
     response = client.post(
-        "/portal/upload",
+        "/portal/csv/upload",
         data={
             "ind-select": 1,
             "loc_file": (resources / "test_upload_loc.csv").open("rb"),

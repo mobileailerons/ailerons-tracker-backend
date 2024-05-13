@@ -2,8 +2,8 @@
 
 import os
 from dotenv import load_dotenv
-from ailerons_tracker_backend.errors import EnvVarError
 from supabase.client import create_client
+from ailerons_tracker_backend.errors import EnvVarError
 
 load_dotenv()
 
@@ -18,18 +18,19 @@ class SupabaseClient:
 
         if not sb_url:
             raise EnvVarError("SUPABASE_URL")
-        else:
-            self._url: str = sb_url
+
+        self._url: str = sb_url
 
         if not sb_key:
             raise EnvVarError("SUPABASE_KEY")
-        else:
-            self._key: str = sb_key
+
+        self._key: str = sb_key
 
         self._client = create_client(self._url, self._key)
 
     @property
     def client(self):
+        """ Supabase client instance """
         return self._client
 
     def get_individual_ids(self) -> list[int]:

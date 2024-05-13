@@ -6,8 +6,8 @@ class Properties:
 
     def __init__(self, individual):
         self.individual_id = individual["id"]
-        self.ind_name = individual["name"]
-        self.pictures = individual["pictures"]
+        self.ind_name = individual["individual_name"]
+        self.pictures = individual["picture"]
 
 
 class PointProperties(Properties):

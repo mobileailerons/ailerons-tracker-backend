@@ -1,16 +1,21 @@
+""" Picture model """
 from sqlalchemy import DateTime, ForeignKey, Text, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column as mc, relationship as rel
 from ailerons_tracker_backend.db import db
 
 
 class Picture(db.Model):
-    id: Mapped[int] = mapped_column(primary_key=True, unique=True)
+    """ Picture model
+    Attributes: 
+        id (int): primary key, unique.
+        url (str): Cloudinary image url. 
+        created_at (datetime): auto.
+        individual (Individual): relationship.
+        individual_id (int): foreign key. """
 
-    url: Mapped[str] = mapped_column(Text)
-
-    created_at: Mapped[str] = mapped_column(DateTime, default=func.now())
-
-    individual: Mapped['Individual'] = relationship(
-        back_populates='picture', cascade='all')
-
-    individual_id: Mapped[int] = mapped_column(ForeignKey('individual.id'))
+    id: Mapped[int] = mc(primary_key=True, unique=True)
+    url: Mapped[str] = mc(Text)
+    created_at: Mapped[str] = mc(DateTime, default=func.now())
+    individual: Mapped['Individual'] = rel(back_populates='picture',
+                                           cascade='all')
+    individual_id: Mapped[int] = mc(ForeignKey('individual.id'))

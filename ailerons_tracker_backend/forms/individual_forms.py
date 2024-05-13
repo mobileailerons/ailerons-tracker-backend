@@ -1,8 +1,8 @@
 """ WTForms for individual and context """
+
 from flask_wtf import FlaskForm
-from flask_wtf.file import MultipleFileField
 from wtforms import DateField, IntegerField, RadioField, StringField, SelectField, TextAreaField
-from wtforms.validators import Length, DataRequired, Optional, NumberRange
+from wtforms.validators import Length, DataRequired, NumberRange
 
 
 class ContextForm(FlaskForm):
@@ -15,25 +15,27 @@ class ContextForm(FlaskForm):
         behavior (str)
     """
 
-    size = IntegerField(
-        'Envergure au balisage',
-        [NumberRange(1, 20)])
-    date = DateField(
-        'Date du balisage',
-        [DataRequired('Veuillez renseigner la date.')])
+    size = IntegerField('Envergure au balisage',
+                        [NumberRange(1, 20)])
+
+    date = DateField('Date du balisage',
+                     [DataRequired(
+                         'Veuillez renseigner la date.')])
+
     situation = RadioField(
         choices=[
             ('Seul', 'Seul'),
             ('En groupe', 'En groupe'),
-            ('Avec partenaire', 'Avec partenaire')],
-        validators=[
-            DataRequired('Veuillez renseigner la situation.')])
+            ('Avec partenaire', 'Avec partenaire')
+        ],
+        validators=[DataRequired(
+            'Veuillez renseigner la situation.')])
 
     behavior = TextAreaField(
         'Comportement observé',
         default="Rédigez vos observations ici",
-        validators=[
-            DataRequired('Veuillez renseigner le comportement observé.')])
+        validators=[DataRequired(
+                'Veuillez renseigner le comportement observé.')])
 
 
 class IndividualForm(FlaskForm):
@@ -47,9 +49,9 @@ class IndividualForm(FlaskForm):
         """
 
     individual_name = StringField(
-        'Surnom',
-        [DataRequired('Veuillez renseigner un surnom.'),
-         Length(min=3, max=25),])
+        'Surnom', [DataRequired('Veuillez renseigner un surnom.'),
+                   Length(min=3, max=25)])
+
     sex = SelectField(
         'Sexe',
         choices=[
@@ -57,7 +59,9 @@ class IndividualForm(FlaskForm):
             ("Femelle", "Femelle"),
             ("Inconnu", "Inconnu")],
         validators=[
-            DataRequired('Veuillez renseigner le sexe.')])
+            DataRequired(
+                'Veuillez renseigner le sexe.')])
+
     description = StringField(
-        "Description",
-        [DataRequired('Veuillez renseigner une description.')])
+        "Description", [DataRequired(
+            'Veuillez renseigner une description.')])

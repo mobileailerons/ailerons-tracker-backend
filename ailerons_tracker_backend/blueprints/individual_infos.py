@@ -6,11 +6,10 @@ from flask_htmx import HTMX, make_response
 from jinja2 import TemplateNotFound
 from jinja_partials import render_partial
 from flask import Blueprint, abort, flash, render_template, request, current_app
-from werkzeug.datastructures import FileStorage, iter_multi_items
+from werkzeug.datastructures import ImmutableMultiDict, iter_multi_items
 from wtforms.validators import ValidationError
 from ailerons_tracker_backend.db import db
 from ailerons_tracker_backend.clients import cloudinary_client
-from ailerons_tracker_backend.errors import InvalidFile
 from ailerons_tracker_backend.models.individual_model import Individual
 from ailerons_tracker_backend.models.context_model import Context
 from ailerons_tracker_backend.forms.individual_forms import ContextForm, IndividualForm
@@ -20,11 +19,11 @@ individual_infos = Blueprint('individual_infos', __name__,
                              template_folder='templates', url_prefix='individual')
 
 
-def upload_images(files: list[FileStorage]) -> list[str]:
+def upload_images(files: ImmutableMultiDict) -> list[str]:
     """ Parse and upload image files.
 
     Args:
-        files (list[FileStorage]): form data (request file objects) that might also have been populated with existing row data (URL strings) """
+        files (ImmutableMultiDict(str)): request files. """
 
     image_urls = []
 
@@ -85,10 +84,6 @@ def update_individual():
         current_app.logger.warning(e)
         return e, 400
 
-    except InvalidFile as e:
-        current_app.logger.error(e.message)
-        return e.message, 400
-
     except postgrest.exceptions.APIError as e:
         current_app.logger.error(e.message)
         return e.message, 304
@@ -142,10 +137,6 @@ def create_individual():
     except ValidationError as e:
         current_app.logger.warning(e)
         return e, 400
-
-    except InvalidFile as e:
-        current_app.logger.error(e.message)
-        return e.message, 400
 
     except postgrest.exceptions.APIError as e:
         current_app.logger.error(e.message)
