@@ -2,10 +2,18 @@
     <td class="icon">
         <img src="{{ ind.icon }}" height="24px" width="24px" alt="Manta ray icon" />
     </td>
-    <td class="id">{{ ind.id }}</td>
-    <td class="text">{{ ind.individual_name }}</td>
-    <td class="text">{{ ind.sex }}</td>
-    <td class="desc">{{ ind.description }}</td>
+    <td class="id">
+        {{ ind.id }}
+    </td>
+    <td class="text">
+        {{ ind.individual_name }}
+    </td>
+    <td class="text">
+        {{ ind.sex }}
+    </td>
+    <td class="desc">
+        {{ ind.description }}
+    </td>
     <td class="img">
         {% if ind.picture %}
             <img src="{{ ind.picture[0].url }}"
@@ -17,12 +25,20 @@
         {% endif %}
     </td>
     <td class="action">
-	<button class="edit" hx-target="main" hx-push-url="true" hx-swap="innerHTML" hx-get="individual/edit?id={{ind.id}}">Editer</button>
+        <button class="edit"
+                hx-target="main"
+                hx-push-url="true"
+                hx-swap="innerHTML"
+                hx-get="individual/edit?id={{ ind.id }}">
+            Editer
+        </button>
         <button class="upload"
                 hx-get="csv/upload?id={{ ind.id }}"
-				hx-push-url="true"
+                hx-push-url="true"
                 hx-trigger="click"
                 hx-target="main"
-                hx-swap="innerHTML swap:300ms settle:50ms show:window:top">Upload</button>
+                hx-swap="innerHTML swap:300ms settle:50ms show:window:top">
+            Upload
+        </button>
     </td>
 </tr>

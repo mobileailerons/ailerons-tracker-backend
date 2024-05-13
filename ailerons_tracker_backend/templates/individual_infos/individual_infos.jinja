@@ -1,42 +1,52 @@
 <section id="create-infocard-section">
-  <h2>Créer une fiche d'identité</h2>
-  <hr />
-  <form id="create-infocard-form"
-        hx-post="create_individual"
-        hx-target="#create-infocard-section"
-        hx-swap="outerHTML"
-        hx-encoding="multipart/form-data">
-		{{ form.csrf_token }}
-    <fieldset>
-      <legend>Individu</legend>
-    {{ render_partial('shared/inputs/text.jinja', input_id = 'indName', input_name = 'indName', label = 'Surnom') }}
-    {{ render_partial('shared/inputs/select.jinja', input_id = 'indSex', label = 'Sexe', options = ['Male', 'Femelle', 'Inconnu']) }}
-    {{ render_partial('shared/inputs/image_file.jinja', input_id = 'indPics', label = 'Photos', multiple = True) }}
-    {{ render_partial('shared/inputs/textarea.jinja', input_id = 'indDesc', label = 'Description', placeholder = 'Rédigez une courte description ici') }}
-  </fieldset>
-  <fieldset>
-    <legend>Contexte de balisage</legend>
-    {{ render_partial('shared/inputs/number.jinja', input_id = 'indSize', label = 'Envergure à la pose', min = '1', max = '600',) }}
-    {{ render_partial('shared/inputs/datetime.jinja', input_id = 'tagDate', label = 'Date de pose de balise',) }}
-    <fieldset class="nested">
-      <legend class="nested">Situation</legend>
-      <div class="row-wrapper">
-        {{ render_partial('shared/inputs/radio.jinja', input_id = 'alone', input_name = 'situation', label = 'Seul', value = 'alone',) }}
-        {{ render_partial('shared/inputs/radio.jinja', input_id = 'group', input_name = 'situation', label = 'En groupe', value = 'alone') 
-        }}
-        {{ render_partial('shared/inputs/radio.jinja', input_id = 'couple', input_name = 'situation', label = 'Avec partenaire', value = 'alone') }}
-      </div>
-    </fieldset>
-    <fieldset class="nested">
-      <legend class="nested">Comportement</legend>
-      <div class="col-wrapper">
-        {{ render_partial('shared/inputs/textarea.jinja', input_id = 'indBehavior', label = 'Comportement observé', placeholder = 'Rédigez vos observations ici') }}
-      </div>
-    </fieldset>
-  </fieldset>
-  <div class="row-wrapper">
-    {{ render_partial('shared/cancel_button.jinja', action = 'dashboard') }}
-    <input type="submit" class="submit" />
-  </div>
-</form>
+    <h2>
+        Créer une fiche d'identité
+    </h2>
+    <hr />
+    <form id="create-infocard-form"
+          hx-post="create_individual"
+          hx-target="#create-infocard-section"
+          hx-swap="outerHTML"
+          hx-encoding="multipart/form-data">
+        {{ form.csrf_token }}
+        <fieldset>
+            <legend>
+                Individu
+            </legend>
+            {{ render_partial('shared/inputs/text.jinja', input_id = 'indName', input_name = 'indName', label = 'Surnom') }}
+            {{ render_partial('shared/inputs/select.jinja', input_id = 'indSex', label = 'Sexe', options = ['Male', 'Femelle', 'Inconnu']) }}
+            {{ render_partial('shared/inputs/image_file.jinja', input_id = 'indPics', label = 'Photos', multiple = True) }}
+            {{ render_partial('shared/inputs/textarea.jinja', input_id = 'indDesc', label = 'Description', placeholder = 'Rédigez une courte description ici') }}
+        </fieldset>
+        <fieldset>
+            <legend>
+                Contexte de balisage
+            </legend>
+            {{ render_partial('shared/inputs/number.jinja', input_id = 'indSize', label = 'Envergure à la pose', min = '1', max = '600',) }}
+            {{ render_partial('shared/inputs/datetime.jinja', input_id = 'tagDate', label = 'Date de pose de balise',) }}
+            <fieldset class="nested">
+                <legend class="nested">
+                    Situation
+                </legend>
+                <div class="row-wrapper">
+                    {{ render_partial('shared/inputs/radio.jinja', input_id = 'alone', input_name = 'situation', label = 'Seul', value = 'alone',) }}
+                    {{ render_partial('shared/inputs/radio.jinja', input_id = 'group', input_name = 'situation', label = 'En groupe', value = 'alone') 
+                    }}
+                    {{ render_partial('shared/inputs/radio.jinja', input_id = 'couple', input_name = 'situation', label = 'Avec partenaire', value = 'alone') }}
+                </div>
+            </fieldset>
+            <fieldset class="nested">
+                <legend class="nested">
+                    Comportement
+                </legend>
+                <div class="col-wrapper">
+                    {{ render_partial('shared/inputs/textarea.jinja', input_id = 'indBehavior', label = 'Comportement observé', placeholder = 'Rédigez vos observations ici') }}
+                </div>
+            </fieldset>
+        </fieldset>
+        <div class="row-wrapper">
+            {{ render_partial('shared/cancel_button.jinja', action = 'dashboard') }}
+            <input type="submit" class="submit" />
+        </div>
+    </form>
 </section>
