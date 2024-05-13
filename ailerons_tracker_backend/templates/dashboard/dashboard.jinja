@@ -1,5 +1,11 @@
 <section id="dashboard">
-    <h2>Dashboard</h2>
+    <h2>
+        Dashboard
+    </h2>
     <hr />
     {{ render_partial("dashboard/partials/individual_table.jinja", inds=inds) }}
+    {{ render_partial("dashboard/partials/help.jinja") }}
+    <button popovertarget="help">
+        Aide
+    </button>
 </section>
