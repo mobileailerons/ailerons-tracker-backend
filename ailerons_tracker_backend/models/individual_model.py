@@ -1,121 +1,50 @@
 """ Individual and Context models """
-from ailerons_tracker_backend.clients.supabase_client import supabase
-from ailerons_tracker_backend.errors import UpdateError
+from typing import List
+from sqlalchemy import Date, DateTime, Integer, Text, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from ailerons_tracker_backend.db import db
+from ailerons_tracker_backend.models.picture_model import Picture
 
 
-class Individual:
-    """ Model for an individual """
+class Individual(db.Model):
+    """ Model for an individual
 
-    common_name: str = 'Diable de mer méditerranéen'
-    binomial_name: str = 'Mobula mobular'
-    icon: str = 'https://static.thenounproject.com/png/1469351-200.png'
+    Attributes:
+        id(int): ID, auto.
+        created_at (timestamp): auto.
+        common_name (str): auto.
+        binomial_name (str): auto.
+        icon (int): auto.
+        individual_name (str): unique.
+        sex (str)
+        picture (PostgreSQL Array)
+        description (str)
+        context: relationship, doesn't appear in database but allow joins, back-populating and cascades.
+    """
 
-    def __init__(self, name: str, sex: str, pictures: list[str], description: str = '', individual_id=None):
-        self._name: str = name
-        self._sex: str = sex
-        self._pictures: list[str] = pictures
-        self._description: str = description
-        self._id = individual_id
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, unique=True)
 
-    @property
-    def name(self):
-        """ name getter """
-        return self._name
+    created_at: Mapped[Date] = mapped_column(DateTime, default=func.now())
 
-    @name.setter
-    def name(self, new_name: str):
-        if not new_name == self._name:
-            self._name = new_name
+    common_name: Mapped[str] = mapped_column(
+        Text, default='Diable de mer méditerranéen')
 
-    @property
-    def sex(self):
-        """ sex getter """
-        return self._sex
+    binomial_name: Mapped[str] = mapped_column(default='Mobula mobular')
 
-    @sex.setter
-    def sex(self, new_sex: str):
-        if new_sex in ['Male', 'Femelle', 'Inconnu'] and new_sex != self._sex:
-            self._sex = new_sex
+    icon: Mapped[int] = mapped_column(default=1)
 
-    @property
-    def pictures(self):
-        """ pictures getter """
-        return self._pictures
+    individual_name: Mapped[str] = mapped_column(unique=True)
 
-    @pictures.setter
-    def pictures(self, new_pics: list[str]):
-        for pic in new_pics:
-            if not pic in self._pictures:
-                self._pictures.append(pic)
+    sex: Mapped[str] = mapped_column(Text)
 
-    @pictures.deleter
-    def pictures(self):
-        del self.pictures
+    description: Mapped[str] = mapped_column(Text)
 
-    @property
-    def description(self):
-        """ desc getter """
-        return self._description
+    picture: Mapped[List['Picture']] = relationship(
+        back_populates='individual',
+        cascade="all"
+    )
 
-    @description.setter
-    def description(self, new_desc: str):
-        if not new_desc == self._description:
-            self._description = new_desc
-
-    @property
-    def id(self):
-        """ ID getter """
-        return self._id
-
-    @id.setter
-    def id(self, new_id):
-        if not self._id:
-            self._id = new_id
-
-    @classmethod
-    def get_from_db(cls, individual_id):
-        """ Get an individual's data from DB and instanciate a model """
-
-        row = supabase.get_exact('id', individual_id, 'individual_new')
-
-        return Individual(
-            individual_id=individual_id,
-            name=row["name"],
-            sex=row["sex"],
-            pictures=row["pictures"],
-            description=row["description"])
-
-    def to_dict(self):
-        """ Return instance attributes and class variables as a dict """
-
-        ind_dict = {'name': self._name,
-                    'sex': self._sex,
-                    'pictures': self._pictures,
-                    'description': self._description,
-                    'common_name': Individual.common_name,
-                    'binomial_name': Individual.binomial_name,
-                    'icon': Individual.icon}
-
-        if self._id:
-            ind_dict['id'] = self._id
-
-        return ind_dict
-
-    def update(self, **updates):
-        """ Update model through setters """
-
-        try:
-            self.name = updates.get("name", self.name)
-            self.sex = updates.get("sex", self.sex)
-            self.description = updates.get("description", self.description)
-            self.pictures = updates.get("pictures", self.pictures)
-
-        except Exception as e:
-            raise UpdateError(e) from e
-
-    def upload(self):
-        """ Insert the object as a new row in table 'context' """
-
-        data = supabase.upsert(self.to_dict(), 'individual_new')
-        self.id = data[0].get("id")
-        return data
+    context: Mapped['Context'] = relationship(
+        back_populates='individual',
+        cascade="all, delete-orphan"
+    )

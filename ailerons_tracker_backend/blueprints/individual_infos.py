@@ -1,29 +1,35 @@
 """ Individual data upload blueprint """
 
-from flask_htmx import HTMX, make_response
+import postgrest
 import flask_login
+from flask_htmx import HTMX, make_response
 from jinja2 import TemplateNotFound
 from jinja_partials import render_partial
-import postgrest
 from flask import Blueprint, abort, flash, render_template, request, current_app
+from werkzeug.datastructures import FileStorage, iter_multi_items
+from wtforms.validators import ValidationError
+from ailerons_tracker_backend.db import db
 from ailerons_tracker_backend.clients import cloudinary_client
 from ailerons_tracker_backend.errors import InvalidFile
 from ailerons_tracker_backend.models.individual_model import Individual
 from ailerons_tracker_backend.models.context_model import Context
-from ailerons_tracker_backend.clients.supabase_client import supabase
-from ailerons_tracker_backend.forms.individual_forms import NewIndividualForm, EditIndividualForm
+from ailerons_tracker_backend.forms.individual_forms import ContextForm, IndividualForm
+from ailerons_tracker_backend.models.picture_model import Picture
 
 individual_infos = Blueprint('individual_infos', __name__,
                              template_folder='templates', url_prefix='individual')
 
 
-def upload_images(files):
-    """ Parse and upload image files """
+def upload_images(files: list[FileStorage]) -> list[str]:
+    """ Parse and upload image files.
+
+    Args:
+        files (list[FileStorage]): form data (request file objects) that might also have been populated with existing row data (URL strings) """
 
     image_urls = []
 
-    for file in files:
-        image_url = cloudinary_client.upload(file.filename, file)
+    for k, v in iter_multi_items(files):
+        image_url = cloudinary_client.upload(v.filename, v)
         image_urls.append(image_url)
 
     return image_urls
@@ -32,40 +38,52 @@ def upload_images(files):
 @ individual_infos.post('/edit')
 @ flask_login.login_required
 def update_individual():
-    """ Update a specific row in tables individual and context"""
+    """ Update specific rows in tables individual and context """
 
     try:
-        ind_id = request.args.get("id")
-        form = EditIndividualForm()
-        current_app.logger.warning(form.validate())
-        if form.validate():
-            ind = Individual.get_from_db(ind_id)
-            context = Context.get_with_ind_id(ind_id)
+        ind_id = request.args.get("id", type=int)
 
-            if form.images.data:
-                image_urls: list[str] = upload_images(form.images.data)
-                ind.pictures = image_urls
+        if not ind_id:
+            raise ValueError()
 
-            form.populate_obj(ind)
-            form.populate_obj(context)
+        ind = db.session.get_one(Individual, ind_id)
 
-            ind.upload()
-            context.upload()
+        ind_form = IndividualForm(obj=ind)
+        context_form = ContextForm(obj=ind.context)
 
-            content = {
-                'message': f'Successfully updated individual {ind.id}',
-                'individual_data': ind.to_dict(),
-                'context_data': context.to_dict()}
+        ind_form.validate()
+        context_form.validate()
 
-            flash(content['message'])
+        ind_form.populate_obj(ind)
+        context_form.populate_obj(ind.context)
 
-            individuals = Individual.get_all()
-            current_app.logger.warning(individuals)
+        if request.files:
+            image_urls: list[str] = upload_images(request.files)
+            for url in image_urls:
+                ind.picture.append(Picture(url=url))
 
-            return make_response(
-                render_partial('dashboard/dashboard.jinja',
-                               inds=individuals),
-                push_url='dashboard'), 200
+        db.session.add(ind)
+        db.session.commit()
+
+        content = {
+            'message': f'Successfully updated individual {ind.id}',
+            'individual_data': ind,
+            'context_data': ind.context}
+
+        current_app.logger.info(content)
+        flash(content['message'])
+
+        individuals = db.session.execute(
+            db.select(
+                Individual)).scalars().all()
+
+        return make_response(
+            render_partial('dashboard/dashboard.jinja', inds=individuals),
+            push_url='/portal/dashboard'), 200
+
+    except ValidationError as e:
+        current_app.logger.warning(e)
+        return e, 400
 
     except InvalidFile as e:
         current_app.logger.error(e.message)
@@ -82,37 +100,48 @@ def create_individual():
     """ Create new rows in tables individual and context """
 
     try:
-        form = NewIndividualForm()
-        current_app.logger.warning(form.validate())
-        if form.validate():
-            current_app.logger.warning('YYYYYYYOOOOO')
-            ind = Individual(name=form.name.data,
-                             sex=form.sex.data,
-                             description=form.data.description)
+        ind_form = IndividualForm()
+        context_form = ContextForm()
 
-            if form.images.data:
-                image_urls: list[str] = upload_images(form.images.data)
-                ind.pictures = image_urls
+        ind_form.validate()
+        context_form.validate()
 
-                ind.upload()
+        ind = Individual(
+            individual_name=ind_form.individual_name.data,
+            sex=ind_form.sex.data,
+            description=ind_form.description.data,
+            context=Context(size=context_form.size.data,
+                            behavior=context_form.behavior.data,
+                            situation=context_form.situation.data,
+                            date=context_form.date.data)
+        )
 
-                context = Context.get_with_ind_id(ind.id)
-                context.upload()
+        if request.files:
+            image_urls: list[str] = upload_images(request.files)
+            for url in image_urls:
+                ind.picture.append(Picture(url=url))
 
-                content = {'message': f'Successfully created new individual {ind.id}',
-                           'individual_data': ind.to_dict(),
-                           'context_data': context.to_dict()}
+        db.session.add(ind)
+        db.session.commit()
 
-                current_app.logger.warning(content)
+        content = {'message': f'Successfully created new individual {ind.id}',
+                   'individual_data': ind,
+                   'context_data': ind.context}
 
-                flash(content['message'])
+        current_app.logger.info(content)
 
-                individuals = Individual.get_all()
+        flash(content['message'])
 
-                return make_response(
-                    render_partial('dashboard/dashboard.jinja',
-                                   inds=individuals),
-                    push_url='dashboard'), 200
+        individuals = db.session.execute(db.select(Individual)).scalars()
+
+        return make_response(
+            render_partial(
+                'dashboard/dashboard.jinja', inds=individuals),
+            replace_url='portal/dashboard'), 200
+
+    except ValidationError as e:
+        current_app.logger.warning(e)
+        return e, 400
 
     except InvalidFile as e:
         current_app.logger.error(e.message)
@@ -126,14 +155,18 @@ def create_individual():
 @ individual_infos.get('/new')
 @ flask_login.login_required
 def show():
-    """ Get new individual window """
-    htmx = HTMX(current_app)
-    try:
-        if htmx:
-            return make_response(render_partial('individual_infos/individual_infos.jinja'),
-                                 push_url="new_individual")
+    """ Serve the view to create a new individual """
 
-        return render_template('base_layout.jinja', view='new_individual')
+    htmx = HTMX(current_app)
+    form = IndividualForm()
+
+    try:
+        current_app.logger.debug("YO")
+        if htmx:
+            return render_partial('individual_infos/individual_infos.jinja', form=form)
+
+        return render_template(
+            'base_layout.jinja', view='new', form=form)
 
     except TemplateNotFound as e:
         current_app.logger.warning(e)
@@ -143,28 +176,29 @@ def show():
 @ individual_infos.get('/edit')
 @ flask_login.login_required
 def edit():
-    """ Return edit window """
+    """ Serve the view to edit an individual """
+
     htmx = HTMX(current_app)
+    form = IndividualForm()
 
     try:
         ind_id = request.args.get("id")
-        if ind_id:
-            ind = supabase.get_exact(
-                "id", ind_id, "individual")
 
-            context = supabase.get_exact(
-                "individual_id", ind_id, "context")
+        if ind_id:
+            ind = db.session.get_one(Individual, ind_id)
+
         else:
-            raise ValueError
+            current_app.logger.warning(f"No individual found for ID={ind_id}")
+            abort(404)
 
         if htmx:
-            return make_response(
-                render_partial('individual_infos/individual_infos_edit.jinja',
-                               ind=ind,
-                               context=context),
-                push_url=f"edit_individual?id={ind_id}")
+            return render_partial(
+                'individual_infos/individual_infos_edit.jinja', ind=ind, form=form)
 
-        return render_template('base_layout.jinja', view=f'edit_individual?id={ind_id}')
+        return render_template(
+            'base_layout.jinja',
+            view=f'edit?id={ind_id}',
+            form=form)
 
     except TemplateNotFound as e:
         current_app.logger.warning(e)

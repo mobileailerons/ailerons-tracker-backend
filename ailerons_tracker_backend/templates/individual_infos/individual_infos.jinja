@@ -6,6 +6,7 @@
         hx-target="#create-infocard-section"
         hx-swap="outerHTML"
         hx-encoding="multipart/form-data">
+		{{ form.csrf_token }}
     <fieldset>
       <legend>Individu</legend>
     {{ render_partial('shared/inputs/text.jinja', input_id = 'indName', input_name = 'indName', label = 'Surnom') }}
@@ -21,9 +22,9 @@
       <legend class="nested">Situation</legend>
       <div class="row-wrapper">
         {{ render_partial('shared/inputs/radio.jinja', input_id = 'alone', input_name = 'situation', label = 'Seul', value = 'alone',) }}
-        {{ render_partial('shared/inputs/radio.jinja', input_id = 'group', input_name = 'situation', label = 'En groupe', value = 'alone',) 
+        {{ render_partial('shared/inputs/radio.jinja', input_id = 'group', input_name = 'situation', label = 'En groupe', value = 'alone') 
         }}
-        {{ render_partial('shared/inputs/radio.jinja', input_id = 'couple', input_name = 'situation', label = 'Avec partenaire', value = 'alone',) }}
+        {{ render_partial('shared/inputs/radio.jinja', input_id = 'couple', input_name = 'situation', label = 'Avec partenaire', value = 'alone') }}
       </div>
     </fieldset>
     <fieldset class="nested">

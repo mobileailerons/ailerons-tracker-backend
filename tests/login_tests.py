@@ -2,10 +2,8 @@
 
 import os
 from dotenv import load_dotenv
-from werkzeug.security import generate_password_hash
 from ailerons_tracker_backend.models.user_model import User
 from ailerons_tracker_backend.errors import EnvVarError
-import logging
 load_dotenv()
 
 
@@ -25,23 +23,23 @@ def test_get_login_page(client):
     assert response.status_code == 200
 
 
-def test_successful_login(client):
+def test_successful_login(app, client):
     """ Test login with a valid password """
+    with app.app_context():
+        pwd = os.getenv('ADMIN_PWD')
 
-    pwd = os.getenv('ADMIN_PWD')
+        if pwd:
+            headers = {'HTTP_HX-Request': 'true'}
+            response = client.post(
+                '/portal/login/', data={
+                    'password': pwd,
+                }, headers=headers
+            )
+            assert response.status_code == 200
 
-    if pwd:
-        headers = {'HTTP_HX-Request': 'true'}
-        response = client.post(
-            '/portal/login/', data={
-                'password': pwd
-            }, headers=headers
-        )
-        assert response.status_code == 200
+            return
 
-        return
-
-    raise EnvVarError('ADMIN_PWD')
+        raise EnvVarError('ADMIN_PWD')
 
 
 def test_invalid_pwd(client):

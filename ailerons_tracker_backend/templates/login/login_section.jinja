@@ -1,6 +1,6 @@
 <section>
     <h2>Connexion</h2>
-    <hr />
-    {% if error_message: %}{{ render_partial("login/shared/error_message.jinja") }}{% endif %}
-    {{ render_partial("login/shared/login_form.jinja") }}
+	<hr />
+		{% if error_message: %}{{ render_partial("login/shared/error_message.jinja") }}{% endif %}
+		{{ render_partial("login/shared/login_form.jinja", form=form) }}
 </section>
