@@ -1,100 +1,105 @@
 <section id="create-infocard-section">
-  <h2>Editer une fiche d'identité</h2>
-  <hr />
-  <form id="create-infocard-form"
-        hx-post="update_individual?id={{ ind.id }}"
-        hx-target="main"
-        hx-swap="innerHTML"
-        hx-encoding="multipart/form-data">
-    <fieldset>
-      <legend>Individu</legend>
-      {% if ind.pictures: %}
-        {% for pic in ind.pictures: %}
-          <img src="{{ pic }}"
-               height="40px"
-               width="40px"
-               alt="Associated image file" />
-        {% endfor %}
-      {% endif %}
-      {{ render_partial('shared/inputs/text.jinja',
-            input_id = 'indName',
-            input_name = 'indName',
-            label = 'Surnom',
-            val = ind.name) }}
-      {{ render_partial('shared/inputs/select.jinja',
-            input_id = 'indSex',
-            label = 'Sexe',
-            options = ['Male', 'Femelle', 'Inconnu'],
-            control = ind.sex) }}
-      {{ render_partial('shared/inputs/image_file.jinja',
-            input_id = 'indPics',
-            label = 'Photos',
-            multiple = True) }}
-      {{ render_partial('shared/inputs/textarea.jinja',
-            input_id = 'indDesc',
-            label = 'Description',
-            val = ind.description) }}
-    </fieldset>
-    <fieldset>
-      <legend>Contexte de balisage</legend>
-      {{ render_partial('shared/inputs/number.jinja',
-            input_id = 'indSize',
-            label = 'Envergure à la pose',
-            min = '1',
-            max = '600',
-            val = context.size) }}
-      {{ render_partial('shared/inputs/date.jinja',
-            input_id = 'tagDate',
-            label = 'Date de pose de balise',
-            val = context.date) }}
-      <fieldset class="nested">
-        <legend class="nested">Situation</legend>
+    <h2>
+        Editer une fiche d'identité
+    </h2>
+    <hr />
+    <form id="create-infocard-form"
+          hx-post="edit?id={{ ind.id }}"
+          hx-target="main"
+          hx-swap="innerHTML"
+          hx-encoding="multipart/form-data">
+        {{ form.csrf_token }}
+        <fieldset>
+            <legend>
+                Individu
+            </legend>
+            {{ render_partial('shared/inputs/text.jinja',
+                        input_id = 'individual_name',
+                        input_name = 'individual_name',
+                        label = 'Surnom',
+                        val = ind.individual_name) }}
+            {{ render_partial('shared/inputs/select.jinja',
+                        input_id = 'sex',
+                        label = 'Sexe',
+                        options = ['Male', 'Femelle', 'Inconnu'],
+                        control = ind.sex) }}
+            <div class="image_browser">
+                {% for p in ind.picture %}
+                    <img src="{{ p.url }}" class="thumbnail" />
+                {% endfor %}
+            </div>
+            {{ render_partial('shared/inputs/image_file.jinja',
+                        input_id = 'picture',
+                        label = 'Photos',
+                        multiple = True) }}
+            {{ render_partial('shared/inputs/textarea.jinja',
+                        input_id = 'description',
+                        label = 'Description',
+                        val = ind.description) }}
+        </fieldset>
+        <fieldset>
+            <legend>
+                Contexte de balisage
+            </legend>
+            {{ render_partial('shared/inputs/number.jinja',
+                        input_id = 'size',
+                        label = 'Envergure à la pose',
+                        min = '1',
+                        max = '600',
+                        val = ind.context.size) }}
+            {{ render_partial('shared/inputs/date.jinja',
+                        input_id = 'date',
+                        label = 'Date de pose de balise',
+                        val = ind.context.date) }}
+            <fieldset class="nested">
+                <legend class="nested">
+                    Situation
+                </legend>
+                <div class="row-wrapper">
+                    {# Ugly as hell but I couldn't use a conditional directly in render_partial, I'll look into it #}
+                    {% if ind.context.situation == 'Seul': %}
+                        {% set alone_checked = true %}
+                    {% endif %}
+                    {{ render_partial('shared/inputs/radio.jinja',
+                                        input_id = 'seul',
+                                        input_name = 'situation',
+                                        label = 'Seul',
+                                        value = 'Seul',
+                                        checked = alone_checked) }}
+                    {% if ind.context.situation == 'En groupe': %}
+                        {% set group_checked = true %}
+                    {% endif %}
+                    {{ render_partial('shared/inputs/radio.jinja',
+                                        input_id = 'groupe',
+                                        input_name = 'situation',
+                                        label = 'En groupe',
+                                        value = 'En groupe',
+                                        checked = group_checked) }}
+                    {% if ind.context.situation == 'En groupe': %}
+                        {% set couple_checked = true %}
+                    {% endif %}
+                    {{ render_partial('shared/inputs/radio.jinja',
+                                        input_id = 'partenaire',
+                                        input_name = 'situation',
+                                        label = 'Avec partenaire',
+                                        value = 'Avec partenaire',
+                                        checked = couple_checked) }}
+                </div>
+            </fieldset>
+            <fieldset class="nested">
+                <div class="col-wrapper">
+                    {{ render_partial('shared/inputs/textarea.jinja',
+                                        input_id = 'behavior',
+                                        label = 'Comportement observé',
+                                        val = ind.context.behavior,
+                                        placeholder = 'Rédigez vos observations ici') }}
+                </div>
+            </fieldset>
+        </fieldset>
         <div class="row-wrapper">
-          {# Ugly as hell but I couldn't use a conditional directly in render_partial, I'll look into it #}
-          {% if context.situation == 'alone': %}
-            {% set alone_checked = true %}
-          {% endif %}
-          {{ render_partial('shared/inputs/radio.jinja',
-                    input_id = 'alone',
-                    input_name = 'situation',
-                    label = 'Seul',
-                    value = 'alone',
-                    checked = alone_checked) 
-          }}
-          {% if context.situation == 'group': %}
-            {% set group_checked = true %}
-          {% endif %}
-          {{ render_partial('shared/inputs/radio.jinja',
-                    input_id = 'group',
-                    input_name = 'situation',
-                    label = 'En groupe',
-                    value = 'group',
-                    checked = group_checked) }}
-          {% if context.situation == 'group': %}
-            {% set couple_checked = true %}
-          {% endif %}
-          {{ render_partial('shared/inputs/radio.jinja',
-                    input_id = 'couple',
-                    input_name = 'situation',
-                    label = 'Avec partenaire',
-                    value = 'couple',
-                    checked = couple_checked) }}
+            {{ render_partial('shared/cancel_button.jinja',
+                        action = 'dashboard') }}
+            <input type="submit" class="submit" />
         </div>
-      </fieldset>
-      <fieldset class="nested">
-        <div class="col-wrapper">
-          {{ render_partial('shared/inputs/textarea.jinja',
-                    input_id = 'indBehavior',
-                    label = 'Comportement observé',
-                    val = context.behavior,
-                    placeholder = 'Rédigez vos observations ici') }}
-        </div>
-      </fieldset>
-    </fieldset>
-    <div class="row-wrapper">
-      {{ render_partial('shared/cancel_button.jinja',
-            action = 'dashboard') }}
-      <input type="submit" class="submit" />
-    </div>
-  </form>
+    </form>
 </section>

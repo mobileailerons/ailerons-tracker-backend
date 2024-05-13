@@ -23,4 +23,5 @@ def upload(image_name: str, image_path: str):
         raise CloudinaryError(e) from e
 
     # Build the URL for the image and save it in the variable 'srcURL'
-    return cloudinary.CloudinaryImage(image_id).build_url()
+    url = cloudinary.CloudinaryImage(image_id).build_url()
+    return url

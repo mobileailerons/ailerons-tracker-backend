@@ -4,7 +4,7 @@ import uuid
 import postgrest
 from flask_htmx import HTMX, make_response
 from jinja_partials import render_partial
-from flask import Blueprint, abort, flash, render_template, request, current_app
+from flask import Blueprint, abort, render_template, request, current_app
 from jinja2 import TemplateNotFound
 from ailerons_tracker_backend.clients.supabase_client import supabase
 from ailerons_tracker_backend.csv_parser.csv_parser import CsvParser
@@ -13,7 +13,7 @@ from ailerons_tracker_backend.utils.file_util import FileManager
 from flask_login import login_required
 
 csv_upload = Blueprint('csv_upload', __name__,
-                       template_folder='templates')
+                       template_folder='templates', url_prefix="csv")
 
 
 @csv_upload.post('/upload')
@@ -54,7 +54,7 @@ def upload_file():
         return e.message, 400
 
 
-@csv_upload.get('/csv_upload')
+@csv_upload.get('/upload')
 @login_required
 def show():
     """ Serve csv upload page """
@@ -70,12 +70,10 @@ def show():
             'id', individual_id, "individual")
 
         if htmx:
-            return make_response(
-                render_partial('csv_upload/csv_upload.jinja',
-                               ind=individual_data),
-                replace_url=f'/portal/csv_upload?id={individual_id}')
+            return render_partial('csv_upload/csv_upload.jinja',
+                                  ind=individual_data)
 
-        return render_template('base_layout.jinja', view=f'csv_upload?id={individual_id}')
+        return render_template('base_layout.jinja', view=f'upload?id={individual_id}')
 
     except TemplateNotFound as e:
         current_app.logger.warning(e)

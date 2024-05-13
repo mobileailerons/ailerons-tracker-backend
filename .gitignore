@@ -12,4 +12,7 @@ uploaded_csv/*.csv
 **/.DS_Store
 stylintrc.json
 node_modules/
-
+package-lock.json
+package.json
+stylintrc.json
+.djlintrc

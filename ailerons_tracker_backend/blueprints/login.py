@@ -37,19 +37,20 @@ def connect():
         return e, 500
 
 
-@login.get('/')
+@ login.get('/')
 def show():
     """ Retrieve the login section HTML template """
 
     htmx = HTMX(current_app)
+    form = LoginForm()
 
     try:
         if htmx:
-            return make_response(
-                render_partial('login/login_section.jinja'),
-                replace_url='/portal/login'), 200
+            return render_partial(
+                'login/login_section.jinja', form=form)
 
-        return render_template('base_layout.jinja', view='login'), 200
+        return render_template(
+            'base_layout.jinja', view='/portal/login', form=form), 200
 
     except TemplateNotFound as e:
         current_app.logger.warning(e)
