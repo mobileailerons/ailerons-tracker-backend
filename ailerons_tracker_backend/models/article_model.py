@@ -1,20 +1,18 @@
 """ Article Model """
-from ailerons_tracker_backend.clients.supabase_client import supabase
+from sqlalchemy import TIMESTAMP, Boolean, Integer, Text, func
+from ailerons_tracker_backend.db import db
+
+from sqlalchemy.orm import Mapped, mapped_column as mc
 
 
-class Article:
+class Article(db.Model):
     """ Model for a news article. """
+    id: Mapped[int] = mc(Integer, primary_key=True, unique=True)
+    created_at: Mapped[str] = mc(TIMESTAMP, default=func.now())
+    title: Mapped[str] = mc(Text)
+    content: Mapped[str] = mc(Text)
+    published: Mapped[bool] = mc(Boolean, default=False)
+    archived: Mapped[bool] = mc(Boolean, default=False)
+    publication_date: Mapped[str] = mc(TIMESTAMP)
+    image_url: Mapped[str] = mc(Text)
 
-    def __init__(self, form, image_url: str, published: bool = False, archived: bool = False):
-        self.title = form['newsTitle']
-        self.content = form["newsContent"]
-        self.image_url = image_url
-        self.published = published
-        self.archived = archived
-        self.publication_date = form["newsDate"]
-
-    def upload(self):
-        """ Insert the object as a new row in table 'individual' """
-
-        data = supabase.upsert(self, 'article')
-        return data

@@ -1,24 +1,22 @@
 """ Record Model """
 
+from uuid import UUID
+
+from sqlalchemy import TIMESTAMP, ForeignKey, Integer, func
+from sqlalchemy.types import Uuid
 from ailerons_tracker_backend.models.record_field_model import LocalisationField, DepthField
+from ailerons_tracker_backend.db import db
+from sqlalchemy.orm import Mapped, mapped_column as mc, relationship as rel
 
 
-class Record:
+class Record(db.Model):
     """ Model for a GPS data record. """
+    id: Mapped[int] = mc(Integer, primary_key=True, unique=True)
+    created_at: Mapped[str] = mc(TIMESTAMP, default=func.now())
+    latitude: Mapped[int] = mc(Integer)
+    longitude: Mapped[int] = mc(Integer)
+    depth: Mapped[int] = mc(Integer)
+    csv_uuid: Mapped[UUID] = mc(Uuid, ForeignKey('csv.uuid'))
+    csv: Mapped['csv'] = rel(back_populates='csv', cascade='all')
+    record_timestamp: Mapped[str] = mc(TIMESTAMP)
 
-    def __init__(self, localisation_field_record: LocalisationField, depth_field_record: DepthField):
-        self.latitude = localisation_field_record.latitude
-        self.longitude = localisation_field_record.longitude
-        self.depth = depth_field_record.depth
-        self.csv_uuid = localisation_field_record.csv_uuid
-        self.record_timestamp = localisation_field_record.record_timestamp
-
-    def to_dict(self):
-        """Return a dict containing the attributes"""
-        return {
-            "latitude": self.latitude,
-            "longitude": self.longitude,
-            "depth": self.depth,
-            "csv_uuid": self.csv_uuid,
-            "record_timestamp": self.record_timestamp
-        }
