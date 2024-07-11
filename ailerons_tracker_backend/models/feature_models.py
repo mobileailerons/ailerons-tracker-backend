@@ -2,29 +2,43 @@
 
 import logging
 from geojson import Feature, Point, LineString
-from sqlalchemy import JSON, ForeignKey, Integer
+from sqlalchemy import JSON, ForeignKey, Identity, func
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import Mapped
 from ailerons_tracker_backend.geojson_generator.data_classes.feature_properties import PointProperties, LineProperties
 from ailerons_tracker_backend.db import db
 from sqlalchemy.orm import mapped_column as mc, relationship as rel
 
 
-class PointFeature(db.Model):
+class PointGeojson(db.Model):
     """ Model for Point entry """
-    id: Mapped[int] = mc(Integer, primary_key=True, unique=True)
-    record_id: Mapped[int] = mc(Integer, ForeignKey('record.id'))
-    record: Mapped['record'] = rel(back_populates='record', cascade='all')
-    individual_id: Mapped[int] = mc(Integer, ForeignKey('individual.id'))
-    individual: Mapped['ind'] = rel(back_populates='individual', cascade='all')
+    id: Mapped[int] = mc(postgresql.BIGINT, Identity(
+        start=1, always=True), primary_key=True, unique=True)
+
+    created_at: Mapped[str] = mc(
+        postgresql.TIMESTAMP(timezone=True), default=func.now())
+
+    record_id: Mapped[int] = mc(postgresql.BIGINT, ForeignKey('record.id'))
+
+    record: Mapped['Record'] = rel(
+        back_populates='point_feature')
+
+    individual_id: Mapped[int] = mc(
+        postgresql.BIGINT, ForeignKey('individual.id'))
+
+    individual: Mapped['Individual'] = rel(
+        back_populates='point_features')
+
     geojson: Mapped[Point] = mc(JSON)
 
 
-def __to_point_feature(record, individual):
+def to_point_feature(record, individual):
     """ Create a Point GeoJSON Feature """
 
     props = PointProperties(record, individual)
+
     geojson = Feature(geometry=Point(
-        (record["longitude"], record["latitude"])), properties=props.__dict__)
+        (record.longitude, record.latitude)), properties=props.__dict__)
 
     if geojson.is_valid:
         return geojson
@@ -32,22 +46,28 @@ def __to_point_feature(record, individual):
     logging.error("invalid geoJSON")
 
 
-class LineStringFeature(db.Model):
+class LineGeojson(db.Model):
     """ Model for Linestring entry """
-    id: Mapped[int] = mc(Integer, primary_key=True, unique=True)
-    record_id: Mapped[int] = mc(Integer, ForeignKey('record.id'))
-    record: Mapped['record'] = rel(back_populates='record', cascade='all')
-    individual_id: Mapped[int] = mc(Integer, ForeignKey('individual.id'))
-    individual: Mapped['ind'] = rel(back_populates='individual', cascade='all')
+
+    id: Mapped[int] = mc(postgresql.BIGINT, Identity(
+        start=1, always=True), primary_key=True, unique=True)
+
+    individual_id: Mapped[int] = mc(
+        postgresql.BIGINT, ForeignKey('individual.id'))
+
+    individual: Mapped['Individual'] = rel(
+        back_populates='line_feature')
+
     geojson: Mapped[LineString] = mc(JSON)
 
 
-def __to_line_feature(ind_records, individual):
+def to_line_feature(ind_records, individual):
     """ Create a LineString GeoJSON Feature """
 
     props = LineProperties(ind_records, individual)
     coordinates = list(
-        map(lambda record: (record["longitude"], record["latitude"]), ind_records))
+        map(lambda record: (record.longitude, record.latitude), ind_records))
+
     geojson = Feature(geometry=LineString(
         coordinates), properties=props.__dict__)
 
