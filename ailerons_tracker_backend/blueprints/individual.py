@@ -15,8 +15,8 @@ from ailerons_tracker_backend.models.context_model import Context
 from ailerons_tracker_backend.forms.individual_forms import ContextForm, IndividualForm
 from ailerons_tracker_backend.models.picture_model import Picture
 
-individual_infos = Blueprint('individual_infos', __name__,
-                             template_folder='templates', url_prefix='individual')
+individual = Blueprint('individual', __name__,
+                       template_folder='templates', url_prefix='individual')
 
 
 def upload_images(files: ImmutableMultiDict) -> list[str]:
@@ -34,8 +34,8 @@ def upload_images(files: ImmutableMultiDict) -> list[str]:
     return image_urls
 
 
-@ individual_infos.post('/edit')
-@ flask_login.login_required
+@individual.post('/edit')
+@flask_login.login_required
 def update_individual():
     """ Update specific rows in tables individual and context """
 
@@ -59,7 +59,7 @@ def update_individual():
         if request.files:
             image_urls: list[str] = upload_images(request.files)
             for url in image_urls:
-                ind.picture.append(Picture(url=url))
+                ind.pictures.append(Picture(url=url))
 
         db.session.add(ind)
         db.session.commit()
@@ -89,8 +89,8 @@ def update_individual():
         return e.message, 304
 
 
-@ individual_infos.post('/new')
-@ flask_login.login_required
+@individual.post('/new')
+@flask_login.login_required
 def create_individual():
     """ Create new rows in tables individual and context """
 
@@ -114,7 +114,7 @@ def create_individual():
         if request.files:
             image_urls: list[str] = upload_images(request.files)
             for url in image_urls:
-                ind.picture.append(Picture(url=url))
+                ind.pictures.append(Picture(url=url))
 
         db.session.add(ind)
         db.session.commit()
@@ -143,8 +143,8 @@ def create_individual():
         return e.message, 304
 
 
-@ individual_infos.get('/new')
-@ flask_login.login_required
+@individual.get('/new')
+@flask_login.login_required
 def show():
     """ Serve the view to create a new individual """
 
@@ -164,8 +164,8 @@ def show():
         abort(404)
 
 
-@ individual_infos.get('/edit')
-@ flask_login.login_required
+@individual.get('/edit')
+@flask_login.login_required
 def edit():
     """ Serve the view to edit an individual """
 

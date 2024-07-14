@@ -14,11 +14,11 @@ from ailerons_tracker_backend.forms.login_form import LoginForm
 
 load_dotenv()
 
-login = Blueprint('login', __name__,
-                  template_folder='templates', url_prefix='login')
+auth = Blueprint('auth', __name__,
+                 template_folder='templates', url_prefix='auth')
 
 
-@login.post('/')
+@auth.post('/')
 def connect():
     """ Connect to the app """
 
@@ -35,7 +35,7 @@ def connect():
             return make_response(render_partial(
                 "dashboard/dashboard.jinja", inds=individuals), push_url="/portal/dashboard")
 
-        return render_partial('login/login_section.jinja',form=form, error_message=True)
+        return render_partial('login/login_section.jinja', form=form, error_message=True)
 
     except TemplateNotFound as e:
         current_app.logger.warning(e)
@@ -46,7 +46,7 @@ def connect():
         return e, 500
 
 
-@ login.get('/')
+@auth.get('/')
 def show():
     """ Retrieve the login section HTML template """
 

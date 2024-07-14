@@ -15,7 +15,6 @@ from flask_cors import CORS
 from ailerons_tracker_backend.forms.login_form import LoginForm
 from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.models.csv_model import Csv
-from ailerons_tracker_backend.models.context_model import Context
 from ailerons_tracker_backend.models.record_model import Record
 from ailerons_tracker_backend.models.picture_model import Picture
 from ailerons_tracker_backend.models.feature_models import LineString, Point
@@ -91,26 +90,7 @@ def create_app(test_config=None):
 
     # Register a blueprint => blueprint routes are now active
     app.register_blueprint(portal)
-
-    @app.post('/news')
-    def upload_article():
-        """ Parse form data and insert news article in DB """
-
-        try:
-            img = request.files["newsImage"]
-            image_url = upload(img.filename, img)
-            article_data = Article(request.form, image_url).upload()
-
-            return article_data, 200
-
-        except (InvalidFile, CloudinaryError) as e:
-            app.logger.error(e.message)
-            return e.message, 400
-
-        except postgrest.exceptions.APIError as e:
-            app.logger.error(e.message)
-            return e.message, 304
-
+     
     app.logger.warning(app.url_map)
 
     return app
