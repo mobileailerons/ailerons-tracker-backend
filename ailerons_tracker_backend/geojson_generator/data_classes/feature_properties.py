@@ -5,9 +5,8 @@ class Properties:
     """ Properties Base Class """
 
     def __init__(self, individual):
-        self.individual_id = individual["id"]
-        self.ind_name = individual["individual_name"]
-        self.pictures = individual["picture"]
+        self.individual_id = individual.id
+        self.ind_name = individual.individual_name
 
 
 class PointProperties(Properties):
@@ -15,7 +14,7 @@ class PointProperties(Properties):
 
     def __init__(self, record, individual):
         Properties.__init__(self, individual)
-        self.timestamp = record["record_timestamp"]
+        self.timestamp = str(record.record_timestamp)
 
 
 class LineProperties(Properties):
@@ -23,5 +22,5 @@ class LineProperties(Properties):
 
     def __init__(self, records, individual):
         Properties.__init__(self, individual)
-        self.timestamp = list(
-            map(lambda record: record["record_timestamp"], records))
+        self.timestamps = list(
+            map(lambda record: str(record.record_timestamp), records))

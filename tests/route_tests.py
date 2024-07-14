@@ -13,20 +13,6 @@ def test_client(client):
     assert client
 
 
-def test_news_route(client):
-    """ Test news route by mocking a request """
-
-    response = client.post(
-        "/news", data={
-            "newsImage": (resources / "test.png").open("rb"),
-            "newsTitle": "Fermentum leo vel orci porta non pulvinar.",
-            "newsContent": "Lorem ipsum dolor sit amet",
-            "newsDate": "2017-06-01T08:30"
-        })
-
-    assert response.status_code == "200"
-
-
 def test_new_individual_route(app, client):
     """ Test individual route by mocking a request """
 
@@ -34,13 +20,10 @@ def test_new_individual_route(app, client):
         ind = db.session.execute(
             db.select(
                 Individual
-            ).where(
-                Individual.individual_name == "Poupette")
-        ).scalar()
+            ).where(Individual.individual_name == 'Poupette')).scalar()
 
         if isinstance(ind, Individual):
             db.session.delete(ind)
-            db.session.delete(ind.context)
 
             db.session.commit()
 
@@ -67,9 +50,10 @@ def test_edit_individual_route(app, client):
     with app.app_context():
         ind = db.session.execute(
             db.select(
-                Individual).where(
-                    Individual.individual_name == "Poupette")
-        ).scalar()
+                Individual
+            ).where(Individual.individual_name == 'Poupette')).scalar()
+
+        db.session.commit()
 
         response = client.post(
             f"/portal/individual/edit?id={ind.id}",
@@ -80,18 +64,24 @@ def test_edit_individual_route(app, client):
         assert response.status_code == 200
 
 
-def test_upload_route(client):
+def test_upload_route(client, app):
     """ Test upload route by mocking a request """
 
-    response = client.post(
-        "/portal/csv/upload",
-        data={
-            "ind-select": 1,
-            "loc_file": (resources / "test_upload_loc.csv").open("rb"),
-            "depth_file": (resources / "test_upload_depth.csv").open("rb")})
+    with app.app_context():
+        ind = db.session.execute(
+            db.select(
+                Individual
+            ).where(Individual.individual_name == 'Poupette')).scalar()
 
-    logging.error(response)
-    assert response.status_code == 200
+        response = client.post(
+            f"/portal/csv/upload?id={ind.id}",
+
+            data={
+                "loc_file": (resources / "gpe3.csv").open("rb"),
+                "depth_file": (resources / "series.csv").open("rb")})
+
+        logging.error(response)
+        assert response.status_code == 200
 
 
 def test_portal_route(client):

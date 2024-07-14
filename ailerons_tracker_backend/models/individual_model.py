@@ -56,7 +56,7 @@ class Individual(db.Model):
 
     feature_collection: Mapped[str] = mc(postgresql.JSON, nullable=True)
 
-    line_feature: Mapped[List['LineGeojson']] = rel(
+    line_feature: Mapped['LineGeojson'] = rel(
         back_populates='individual', cascade='all, delete-orphan')
 
     csv: Mapped['Csv'] = rel(

@@ -1,6 +1,5 @@
 """ GeoJSON Features Models """
 
-import logging
 from geojson import Feature, Point, LineString
 from sqlalchemy import JSON, ForeignKey, Identity, func
 from sqlalchemy.dialects import postgresql
@@ -42,8 +41,6 @@ def to_point_feature(record, individual):
 
     if geojson.is_valid:
         return geojson
-
-    logging.error("invalid geoJSON")
 
 
 class LineGeojson(db.Model):
