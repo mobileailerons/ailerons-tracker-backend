@@ -28,8 +28,21 @@ pandas = "^2.2.2"
 pytest = "^8.2.2"
 psycopg2 = "^2.9.9"
 flask-migrate = "^4.0.7"
+playwright = "^1.45.0"
+pytest-playwright = "^0.5.1"
+
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+    "integration",
+]
+log_cli = "True"
+log_cli_level = "INFO"
 
