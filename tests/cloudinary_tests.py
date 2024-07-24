@@ -1,7 +1,7 @@
 """ Cloudinary test suite """
 import os
 from pathlib import Path
-from ailerons_tracker_backend.clients import cloudinary_client
+from ailerons_tracker_backend import cloudinary_client
 resources = Path(__file__).parent / "resources"
 
 image = (resources / 'test.png').open('rb')
