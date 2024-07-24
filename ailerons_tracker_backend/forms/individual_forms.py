@@ -1,7 +1,8 @@
 """ WTForms for individual and context """
 
 from flask_wtf import FlaskForm
-from wtforms import DateField, IntegerField, RadioField, StringField, SelectField, TextAreaField
+from wtforms import IntegerField, RadioField, StringField, SelectField, TextAreaField
+from wtforms.fields import DateTimeLocalField
 from wtforms.validators import Length, DataRequired, NumberRange
 
 
@@ -18,9 +19,9 @@ class ContextForm(FlaskForm):
     size = IntegerField('Envergure au balisage',
                         [NumberRange(1, 20)])
 
-    date = DateField('Date du balisage',
-                     [DataRequired(
-                         'Veuillez renseigner la date.')])
+    tag_date = DateTimeLocalField('Date du balisage',
+                                  [DataRequired(
+                                      'Veuillez renseigner la date.')])
 
     situation = RadioField(
         choices=[

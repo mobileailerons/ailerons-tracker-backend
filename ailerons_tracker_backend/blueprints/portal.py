@@ -5,8 +5,8 @@ from jinja2 import TemplateNotFound
 # Local modules
 from ailerons_tracker_backend.blueprints.csv import csv
 from ailerons_tracker_backend.blueprints.login import login
-from ailerons_tracker_backend.blueprints.individual_infos import individual_infos
 from ailerons_tracker_backend.blueprints.dashboard import dashboard
+from ailerons_tracker_backend.blueprints.individual import individual
 
 portal = Blueprint('portal', __name__,
                    template_folder='templates',
@@ -16,7 +16,7 @@ portal = Blueprint('portal', __name__,
 portal.register_blueprint(dashboard)
 portal.register_blueprint(csv)
 portal.register_blueprint(login)
-portal.register_blueprint(individual_infos)
+portal.register_blueprint(individual)
 
 
 @portal.route('/')
