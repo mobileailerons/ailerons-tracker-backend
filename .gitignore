@@ -16,3 +16,8 @@ package-lock.json
 package.json
 stylintrc.json
 .djlintrc
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+playwright/.auth
