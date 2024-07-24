@@ -1,7 +1,11 @@
 """ Configuration file enabling test suites to access predefined fixtures """
+from pathlib import Path
+from flask import url_for
 import pytest
 from ailerons_tracker_backend import create_app
 from ailerons_tracker_backend.models.user_model import User
+
+# pylint: disable=locally-disabled, redefined-outer-name
 
 
 @pytest.fixture()
@@ -26,3 +30,18 @@ def client(app):
 def route_map(app):
     """ Gives access to a list of app routes """
     return app.url_map
+
+
+@pytest.fixture()
+def browser_context_args(browser_context_args):
+    return {
+        **browser_context_args,
+        "storage_state": Path("./playwright/.auth/state.json"),
+    }
+
+
+@pytest.fixture()
+def resources():
+    return Path("./tests/resources")
+
+

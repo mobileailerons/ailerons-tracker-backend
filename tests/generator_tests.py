@@ -1,23 +1,20 @@
 """ Generator test suite """
 
-from geojson import FeatureCollection
-from ailerons_tracker_backend.geojson_generator.data_classes.feature_models import LineStringFeature, PointFeature
-from ailerons_tracker_backend.geojson_generator.generator import Generator
-
-generator = Generator()
+from ailerons_tracker_backend.db import db
+from ailerons_tracker_backend.generator import generate
+from ailerons_tracker_backend.models.individual_model import Individual
 
 
-def test_init():
-    """ Test instanciation of generator """
-    assert isinstance(generator, Generator)
-
-
-def test_generate():
+def test_generate(app):
     """ Test generating geoJSON features from DB """
-    generator.generate()
 
-    assert isinstance(generator.get_lines()[0], LineStringFeature)
+    with app.app_context():
+        individual = db.session.execute(
+            db.select(Individual).where(
+                Individual.individual_name == "Poupette")
+        ).scalar()
 
-    assert isinstance(generator.get_points()[0][0], PointFeature)
-
-    assert isinstance(generator.get_p_collections()[0], FeatureCollection)
+        assert isinstance(individual, Individual)
+        assert generate(individual, db).feature_collection is not None
+        assert generate(individual, db).line_feature is not None
+        assert generate(individual, db).records[0].point_feature is not None

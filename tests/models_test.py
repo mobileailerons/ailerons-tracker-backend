@@ -11,10 +11,9 @@ def test_create_ind(app):
     with app.app_context():
         ind = db.session.execute(
             db.select(
-                Individual,
-                Context).join(
-                Individual.context).where(
-                Individual.individual_name == "Test")
+                Individual
+            ).where(
+                Individual.individual_name == "Poupette")
         ).scalar()
 
         if isinstance(ind, Individual):
@@ -22,9 +21,9 @@ def test_create_ind(app):
             db.session.commit()
 
         ind = Individual(
-            individual_name="Test",
+            individual_name="Poupette",
             sex="Femelle",
-            picture=[],
+            pictures=[],
             description='...',
             context=Context(
                 date=date.today().isoformat(),
@@ -45,12 +44,11 @@ def test_upd_ind(app):
     with app.app_context():
         ind = db.session.execute(
             db.select(
-                Individual,
-                Context).join(
-                Individual.context).where(
-                Individual.individual_name == "Test")
+                Individual
+            ).where(
+                Individual.individual_name == "Poupette")
         ).scalar()
-
+        assert isinstance(ind, Individual)
         check = ind.sex
 
         ind.sex = 'Male' if ind.sex == 'Femelle' else 'Femelle'
