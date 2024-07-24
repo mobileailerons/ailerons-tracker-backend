@@ -4,7 +4,11 @@
     </h2>
     <hr />
     {{ render_partial("map/map_preview.jinja") }}
-    {{ render_partial("dashboard/partials/individual_table.jinja", inds=inds) }}
+    <table hx-get="{{ url_for("portal.dashboard.show_table") }}"
+           hx-trigger="load"
+           hx-swap="outerHTML"
+           hx-push-url="true">
+    </table>
     {{ render_partial("dashboard/partials/help.jinja") }}
     <button popovertarget="help">
         Aide

@@ -2,6 +2,7 @@
 
 from flask import Blueprint, abort, current_app, render_template, url_for
 from jinja2 import TemplateNotFound
+
 # Local modules
 from ailerons_tracker_backend.blueprints.csv import csv
 from ailerons_tracker_backend.blueprints.login import login
@@ -24,9 +25,8 @@ def show():
     """ Serve portal """
 
     try:
-        # Render template returns raw HTML
-        return render_template('base_layout.jinja', view='dashboard')
+        return render_template('base_layout.jinja', view=url_for("portal.show"))
 
     except TemplateNotFound as e:
-        current_app.logger.warning(e)
+        current_app.logger.error(e)
         abort(404)

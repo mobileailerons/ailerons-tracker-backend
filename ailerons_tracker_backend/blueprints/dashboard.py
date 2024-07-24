@@ -1,36 +1,46 @@
 """ Dashboard blueprint """
 
-from flask_htmx import HTMX
 from jinja_partials import render_partial
-from flask import Blueprint, abort, current_app, render_template
-from flask_login import login_required
 from jinja2 import TemplateNotFound
-
+from flask import Blueprint, abort, current_app, render_template, url_for
+from flask_htmx import HTMX
+from flask_login import login_required
 from ailerons_tracker_backend.db import db
 from ailerons_tracker_backend.models.individual_model import Individual
+# Local modules
 
-dashboard = Blueprint('dashboard', __name__, template_folder='templates')
+dashboard = Blueprint('dashboard', __name__,
+                      template_folder='templates', url_prefix='/dashboard')
 
 
-@dashboard.get('/dashboard')
+@dashboard.get('/')
 @login_required
 def show():
-    """ Get dashboard window """
+    """ Serve dashboard """
 
     htmx = HTMX(current_app)
 
+    try:
+        if htmx:
+            return render_partial('dashboard/dashboard.jinja')
+
+        return render_template('base_layout.jinja', view=url_for("portal.dashboard.show"))
+
+    except TemplateNotFound as e:
+        current_app.logger.error(e)
+        abort(404)
+
+
+@dashboard.get('/individuals')
+@login_required
+def show_table():
     try:
         individuals = db.session.execute(
             db.select(Individual)
         ).scalars().all()
 
-
-        if htmx:
-
-            return render_partial('dashboard/dashboard.jinja', inds=individuals)
-
-        return render_template('base_layout.jinja', view='dashboard')
+        return render_template("dashboard/partials/individual_table.jinja", inds=individuals), 200
 
     except TemplateNotFound as e:
-        current_app.logger.warning(e)
+        current_app.logger.error(e)
         abort(404)
