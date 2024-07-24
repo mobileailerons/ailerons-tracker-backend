@@ -19,6 +19,7 @@ from ailerons_tracker_backend.clients.cloudinary_client import upload
 from ailerons_tracker_backend.models.user_model import User
 from ailerons_tracker_backend.db import db
 from .errors import CloudinaryError, InvalidFile
+from ailerons_tracker_backend.db import db, migrate
 
 load_dotenv()
 
@@ -36,6 +37,7 @@ def create_app(test_config=None):
         "@aws-0-eu-central-1.pooler.supabase.com:5432/postgres")
 
     db.init_app(app)
+    migrate.init_app(app, db)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
