@@ -4,10 +4,11 @@
     </h2>
     <hr />
     <form id="csv-upload-form"
-          hx-post="upload?id={{ ind.id }}"
+	hx-post="{{url_for('portal.csv.upload', id=ind.id)}}"
           hx-encoding="multipart/form-data"
           hx-target="main"
           hx-swap="innerHTML swap:300ms settle:50ms show:window:top">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <fieldset>
             <legend>
                 Fichiers CSV

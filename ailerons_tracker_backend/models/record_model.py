@@ -1,24 +1,41 @@
 """ Record Model """
 
-from ailerons_tracker_backend.models.record_field_model import LocalisationField, DepthField
+from uuid import UUID
+from geojson import GeoJSON
+from sqlalchemy import ForeignKey, Identity, Integer, func
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.types import Uuid
+from sqlalchemy.orm import Mapped, mapped_column as mc, relationship as rel
+from ailerons_tracker_backend.db import db
+
+# pylint: disable=locally-disabled, not-callable
 
 
-class Record:
+class Record(db.Model):
     """ Model for a GPS data record. """
 
-    def __init__(self, localisation_field_record: LocalisationField, depth_field_record: DepthField):
-        self.latitude = localisation_field_record.latitude
-        self.longitude = localisation_field_record.longitude
-        self.depth = depth_field_record.depth
-        self.csv_uuid = localisation_field_record.csv_uuid
-        self.record_timestamp = localisation_field_record.record_timestamp
+    id: Mapped[int] = mc(postgresql.BIGINT, Identity(
+        start=1, always=True), primary_key=True, unique=True)
 
-    def to_dict(self):
-        """Return a dict containing the attributes"""
-        return {
-            "latitude": self.latitude,
-            "longitude": self.longitude,
-            "depth": self.depth,
-            "csv_uuid": self.csv_uuid,
-            "record_timestamp": self.record_timestamp
-        }
+    created_at: Mapped[str] = mc(
+        postgresql.TIMESTAMP(timezone=True), default=func.now())
+
+    latitude: Mapped[int] = mc(postgresql.FLOAT)
+
+    longitude: Mapped[int] = mc(postgresql.FLOAT)
+
+    point_feature: Mapped['GeoJSON'] = mc(postgresql.JSON, nullable=True)
+
+    depth: Mapped[int] = mc(Integer, nullable=True)
+
+    csv: Mapped['Csv'] = rel(back_populates='records')
+
+    csv_uuid: Mapped[UUID] = mc(Uuid, ForeignKey('csv.uuid'))
+
+    individual: Mapped['Individual'] = rel(
+        back_populates='records')
+
+    individual_id: Mapped[int] = mc(
+        postgresql.BIGINT, ForeignKey('individual.id'))
+
+    record_timestamp: Mapped[str] = mc(postgresql.TIMESTAMP(timezone=False))

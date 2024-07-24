@@ -1,11 +1,12 @@
 """ Portal blueprint """
 
-from flask import Blueprint, abort, current_app, render_template
+from flask import Blueprint, abort, current_app, render_template, url_for
 from jinja2 import TemplateNotFound
-from ailerons_tracker_backend.blueprints.dashboard import dashboard
-from ailerons_tracker_backend.blueprints.csv_upload import csv_upload
+# Local modules
+from ailerons_tracker_backend.blueprints.csv import csv
 from ailerons_tracker_backend.blueprints.login import login
 from ailerons_tracker_backend.blueprints.individual_infos import individual_infos
+from ailerons_tracker_backend.blueprints.dashboard import dashboard
 
 portal = Blueprint('portal', __name__,
                    template_folder='templates',
@@ -13,7 +14,7 @@ portal = Blueprint('portal', __name__,
                    url_prefix='/portal')
 
 portal.register_blueprint(dashboard)
-portal.register_blueprint(csv_upload)
+portal.register_blueprint(csv)
 portal.register_blueprint(login)
 portal.register_blueprint(individual_infos)
 
