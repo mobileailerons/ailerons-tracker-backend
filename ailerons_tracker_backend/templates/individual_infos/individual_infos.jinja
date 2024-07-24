@@ -4,7 +4,7 @@
     </h2>
     <hr />
     <form id="create-infocard-form"
-          hx-post="create_individual"
+          hx-post="{{ url_for("portal.individual.create") }}"
           hx-target="#create-infocard-section"
           hx-swap="outerHTML"
           hx-encoding="multipart/form-data">
@@ -13,17 +13,17 @@
             <legend>
                 Individu
             </legend>
-            {{ render_partial('shared/inputs/text.jinja', input_id = 'indName', input_name = 'indName', label = 'Surnom') }}
-            {{ render_partial('shared/inputs/select.jinja', input_id = 'indSex', label = 'Sexe', options = ['Male', 'Femelle', 'Inconnu']) }}
-            {{ render_partial('shared/inputs/image_file.jinja', input_id = 'indPics', label = 'Photos', multiple = True) }}
-            {{ render_partial('shared/inputs/textarea.jinja', input_id = 'indDesc', label = 'Description', placeholder = 'Rédigez une courte description ici') }}
+            {{ render_partial('shared/inputs/text.jinja', input_id = 'individual_name', input_name = 'individual_name', label = 'Surnom') }}
+            {{ render_partial('shared/inputs/select.jinja', input_id = 'sex', label = 'Sexe', options = ['Male', 'Femelle', 'Inconnu']) }}
+            {{ render_partial('shared/inputs/image_file.jinja', input_id = 'pictures', label = 'Photos', multiple = True) }}
+            {{ render_partial('shared/inputs/textarea.jinja', input_id = 'description', label = 'Description', placeholder = 'Rédigez une courte description ici') }}
         </fieldset>
         <fieldset>
             <legend>
                 Contexte de balisage
             </legend>
-            {{ render_partial('shared/inputs/number.jinja', input_id = 'indSize', label = 'Envergure à la pose', min = '1', max = '600',) }}
-            {{ render_partial('shared/inputs/datetime.jinja', input_id = 'tagDate', label = 'Date de pose de balise',) }}
+            {{ render_partial('shared/inputs/number.jinja', input_id = 'size', label = 'Envergure à la pose', min = '1', max = '15',) }}
+            {{ render_partial('shared/inputs/datetime.jinja', input_id = 'tag_date', label = 'Date de pose de balise',) }}
             <fieldset class="nested">
                 <legend class="nested">
                     Situation
@@ -36,16 +36,13 @@
                 </div>
             </fieldset>
             <fieldset class="nested">
-                <legend class="nested">
-                    Comportement
-                </legend>
                 <div class="col-wrapper">
-                    {{ render_partial('shared/inputs/textarea.jinja', input_id = 'indBehavior', label = 'Comportement observé', placeholder = 'Rédigez vos observations ici') }}
+                    {{ render_partial('shared/inputs/textarea.jinja', input_id = 'behavior', label = 'Comportement observé', placeholder = 'Rédigez vos observations ici') }}
                 </div>
             </fieldset>
         </fieldset>
         <div class="row-wrapper">
-            {{ render_partial('shared/cancel_button.jinja', action = 'dashboard') }}
+            {{ render_partial('shared/cancel_button.jinja', action = url_for("portal.dashboard.show") ) }}
             <input type="submit" class="submit" />
         </div>
     </form>

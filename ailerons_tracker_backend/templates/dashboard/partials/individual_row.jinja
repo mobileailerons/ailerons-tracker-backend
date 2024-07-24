@@ -29,7 +29,7 @@
                 hx-target="main"
                 hx-push-url="true"
                 hx-swap="innerHTML"
-                hx-get="individual/edit?id={{ ind.id }}">
+                hx-get="{{ url_for("portal.individual.show_edit", id=ind.id) }}">
             Editer
         </button>
         <button class="upload"

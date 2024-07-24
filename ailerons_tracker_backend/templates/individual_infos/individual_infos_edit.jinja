@@ -4,7 +4,7 @@
     </h2>
     <hr />
     <form id="create-infocard-form"
-          hx-post="edit?id={{ ind.id }}"
+          hx-post="{{ url_for('portal.individual.edit', id=ind.id) }}"
           hx-target="main"
           hx-swap="innerHTML"
           hx-encoding="multipart/form-data">
