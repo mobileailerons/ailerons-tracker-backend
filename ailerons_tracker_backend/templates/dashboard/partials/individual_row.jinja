@@ -33,7 +33,7 @@
             Editer
         </button>
         <button class="upload"
-                hx-get="csv/upload?id={{ ind.id }}"
+                hx-get="{{ url_for("portal.csv.show",  id=ind.id) }}"
                 hx-push-url="true"
                 hx-trigger="click"
                 hx-target="main"

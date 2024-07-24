@@ -20,7 +20,7 @@ class InvalidFile(Exception):
 class GeneratorError(Exception):
     """ Generic GeoJSON generator error """
 
-    def __init__(self, base_error):
+    def __init__(self, base_error: Exception | None = None):
         self.message = "Something went wrong while generating geoJSONs"
         self.base_error = base_error
 
@@ -28,7 +28,7 @@ class GeneratorError(Exception):
 class GeneratorPointError(GeneratorError):
     """ Error building PointFeatures """
 
-    def __init__(self, obj, base_error):
+    def __init__(self, obj, base_error: Exception | None = None):
         super().__init__(base_error)
         self.message = f"Something went wrong while generating PointFeatures with {obj}"
 
@@ -36,7 +36,7 @@ class GeneratorPointError(GeneratorError):
 class GeneratorLineError(GeneratorError):
     """ Invalid file name """
 
-    def __init__(self, obj, base_error):
+    def __init__(self, obj, base_error: Exception | None = None):
         super().__init__(base_error)
         self.message = f"Something went wrong while generating LineFeatures with {obj}"
 
