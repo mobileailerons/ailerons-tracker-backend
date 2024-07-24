@@ -3,22 +3,17 @@
 __version__ = "0.7"
 
 import os
-from flask_htmx import make_response
-import postgrest
+from flask_htmx import HTMX, make_response
 from flask_login import FlaskLoginClient
 from dotenv import load_dotenv
 from flask_wtf import CSRFProtect
 from jinja_partials import render_partial, register_extensions
 import flask_login
-from flask import Flask, request
+from flask import Flask, current_app, render_template, url_for
 from flask_cors import CORS
 from ailerons_tracker_backend.forms.login_form import LoginForm
-from ailerons_tracker_backend.models.article_model import Article
 from ailerons_tracker_backend.blueprints.portal import portal
-from ailerons_tracker_backend.clients.cloudinary_client import upload
 from ailerons_tracker_backend.models.user_model import User
-from ailerons_tracker_backend.db import db
-from .errors import CloudinaryError, InvalidFile
 from ailerons_tracker_backend.db import db, migrate
 
 load_dotenv()
@@ -32,10 +27,12 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY=os.getenv("APP_SECRET_KEY"),
         # URI can be found in Supabase dashboard, pwd can be reset there as well
-        SQLALCHEMY_DATABASE_URI=f"postgresql://" \
-        f"postgres.rddizwstjdinzyzvnuun:{os.getenv('DB_PWD')}" \
-        "@aws-0-eu-central-1.pooler.supabase.com:5432/postgres")
-
+        SQLALCHEMY_DATABASE_URI=f"postgresql://"
+        f"postgres.rddizwstjdinzyzvnuun:{os.getenv('DB_PWD')}"
+        "@aws-0-eu-central-1.pooler.supabase.com:5432/postgres",
+        SERVER_NAME='127.0.0.1:5000',
+        APPLICATION_ROOT='/'
+    )
     db.init_app(app)
     migrate.init_app(app, db)
 
@@ -69,43 +66,28 @@ def create_app(test_config=None):
     login_manager = flask_login.LoginManager()
     login_manager.init_app(app)
 
-    @ login_manager.user_loader
+    @login_manager.user_loader
     def load_user(user):
         app.logger.info(f"Logged: {user}")
-        if user == 'Admin':
-            return User()
+        return User()
 
-    @ login_manager.unauthorized_handler
+    @login_manager.unauthorized_handler
     def unauthorized_handler():
         form = LoginForm()
-        return make_response(
-            render_partial("login/login_section.jinja", form=form),
-            push_url="/portal/login")
+        htmx = HTMX(current_app)
+
+        if htmx:
+            return make_response(
+                render_partial("login/login_section.jinja", form=form),
+                push_url=url_for("portal.login.show")), 302
+
+        return render_template("base_layout.jinja", view=url_for("portal.login.show")), 302
 
     app.test_client_class = FlaskLoginClient
 
     # Register a blueprint => blueprint routes are now active
     app.register_blueprint(portal)
 
-    @ app.post('/news')
-    def upload_article():
-        """ Parse form data and insert news article in DB """
-
-        try:
-            img = request.files["newsImage"]
-            image_url = upload(img.filename, img)
-            article_data = Article(request.form, image_url).upload()
-
-            return article_data, 200
-
-        except (InvalidFile, CloudinaryError) as e:
-            app.logger.error(e.message)
-            return e.message, 400
-
-        except postgrest.exceptions.APIError as e:
-            app.logger.error(e.message)
-            return e.message, 304
-
-    app.logger.warning(app.url_map)
+    app.logger.info(app.url_map)
 
     return app

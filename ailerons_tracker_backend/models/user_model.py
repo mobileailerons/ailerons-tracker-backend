@@ -8,20 +8,20 @@ from ailerons_tracker_backend.errors import EnvVarError
 
 load_dotenv()
 
-pwd = os.getenv('ADMIN_PWD')
+admin_pword = os.getenv('ADMIN_PWD')
 
-if not pwd:
+if admin_pword is None:
     raise EnvVarError('ADMIN_PWD')
 
 
 class User(UserMixin):
     """ Load the default version of User class provided by flask_login and add methods """
 
-    pwd_hash = generate_password_hash(pwd)
+    pwd_hash = generate_password_hash(admin_pword)
     id = 'Admin'
 
-    @ classmethod
-    def check_pwd(cls, pwd):
+    @classmethod
+    def check_pwd(cls, pword: str):
         """ Compare stored and provided password hash """
 
-        return check_password_hash(pwhash=cls.pwd_hash, password=pwd)
+        return check_password_hash(pwhash=cls.pwd_hash, password=pword)

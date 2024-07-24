@@ -31,13 +31,13 @@
             <nav class="navbar">
                 <li>
                     <ul>
-                        <a hx-get="/portal/login"
+                        <a hx-get="{{ url_for("portal.login.show") }}"
                            hx-target="main"
                            hx-push-url="true"
                            hx-swap="innerHTML">Connexion</a>
                     </ul>
                     <ul>
-                        <a hx-get="/portal/dashboard"
+                        <a hx-get="{{ url_for("portal.dashboard.show") }}"
                            hx-push-url="true"
                            hx-target="main"
                            hx-swap="innerHTML">Dashboard</a>
