@@ -18,7 +18,9 @@ def test_redirect_login(page: Page, app):
         redirects unauthenticated users to login page """
 
     with app.app_context():
-
+        page.goto(url_for("portal.show"))
+        expect(page).to_have_url(url_for("portal.login.show"))
+        
         page.goto(url_for("portal.dashboard.show"))
         expect(page).to_have_url(url_for("portal.login.show"))
 

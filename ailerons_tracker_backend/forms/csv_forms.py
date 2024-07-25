@@ -5,8 +5,8 @@ from flask_wtf import FlaskForm
 from wtforms.fields import FileField
 
 
-class ContextForm(FlaskForm):
-    """ Context form
+class CsvForm(FlaskForm):
+    """ Csv form
 
     Fields:
     """

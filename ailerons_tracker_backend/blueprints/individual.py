@@ -160,7 +160,7 @@ def show_create():
             return render_partial('individual_infos/individual_infos.jinja', form=form)
 
         return render_template(
-            'base_layout.jinja', view=url_for("portal.individual.show_create"), form=form)
+            'base_layout.jinja', view=url_for("portal.individual.show_create"))
 
     except TemplateNotFound as e:
         current_app.logger.error(e)
