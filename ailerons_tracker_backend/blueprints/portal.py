@@ -25,7 +25,7 @@ def show():
     """ Serve portal """
 
     try:
-        return render_template('base_layout.jinja', view=url_for("portal.show"))
+        return render_template('base_layout.jinja', view=url_for("portal.dashboard.show"))
 
     except TemplateNotFound as e:
         current_app.logger.error(e)
