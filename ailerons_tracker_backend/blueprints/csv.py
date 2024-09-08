@@ -121,7 +121,7 @@ def show():
         if htmx:
             return render_partial('csv_upload/csv_upload.jinja', ind=individual), 200
 
-        return render_template('base_layout.jinja', view=url_for('portal.csv.show'))
+        return render_template('base_layout.jinja', view=url_for('portal.csv.show', id=individual_id))
 
     except TemplateNotFound as e:
         current_app.logger.error(e)
