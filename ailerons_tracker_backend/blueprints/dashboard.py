@@ -35,11 +35,14 @@ def show():
 @login_required
 def show_table():
     try:
+        htmx = HTMX(current_app)
         individuals = db.session.execute(
             db.select(Individual)
         ).scalars().all()
 
-        return render_template("dashboard/partials/individual_table.jinja", inds=individuals), 200
+        if htmx:
+            return render_template("dashboard/partials/individual_table.jinja", inds=individuals), 200
+        return render_template("base_layout.jinja", view=url_for("portal.dashboard.show"))
 
     except TemplateNotFound as e:
         current_app.logger.error(e)
