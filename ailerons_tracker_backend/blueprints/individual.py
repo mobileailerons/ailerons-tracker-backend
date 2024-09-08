@@ -187,10 +187,10 @@ def show_edit():
             return render_partial(
                 'individual_infos/individual_infos_edit.jinja', ind=ind, form=form)
 
+        current_app.logger.debug("YOOOO")
         return render_template(
             'base_layout.jinja',
-            view=url_for("portal.individual.show_edit"),
-            form=form)
+            view=url_for("portal.individual.show_edit", id=individual_id))
 
     except TemplateNotFound as e:
         current_app.logger.error(e)

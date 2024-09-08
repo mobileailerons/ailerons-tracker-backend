@@ -98,7 +98,7 @@
         </fieldset>
         <div class="row-wrapper">
             {{ render_partial('shared/cancel_button.jinja',
-                        action = 'dashboard') }}
+                        action = url_for("portal.dashboard.show") ) }}
             <input type="submit" class="submit" />
         </div>
     </form>

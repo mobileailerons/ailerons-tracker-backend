@@ -4,7 +4,7 @@
     </h2>
     <hr />
     <form id="csv-upload-form"
-	hx-post="{{url_for('portal.csv.upload', id=ind.id)}}"
+          hx-post="{{ url_for('portal.csv.upload', id=ind.id) }}"
           hx-encoding="multipart/form-data"
           hx-target="main"
           hx-swap="innerHTML swap:300ms settle:50ms show:window:top">
@@ -17,7 +17,7 @@
             {{ render_partial('shared/inputs/file.jinja', input_id='depth_file' , label='Relevés de profondeur',accept='.csv') }}
         </fieldset>
         <div class="row-wrapper padded">
-            {{ render_partial('shared/cancel_button.jinja', action='dashboard') }}
+            {{ render_partial('shared/cancel_button.jinja', action= url_for("portal.dashboard.show") ) }}
             <input type="submit" class="submit" />
         </div>
     </form>
